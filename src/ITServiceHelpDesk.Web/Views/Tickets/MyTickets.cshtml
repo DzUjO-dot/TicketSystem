@@ -1,6 +1,40 @@
 @model ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel
+@using ITServiceHelpDesk.Models.Enums
 @{
     ViewData["Title"] = "Moje zgłoszenia";
+
+    var allTickets = Model.Tickets?.ToList() ?? new List<ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListItemViewModel>();
+
+    // Liczniki na podstawie aktualnej strony (orientacyjne)
+    int cntNew        = allTickets.Count(t => t.StatusEnum == TicketStatus.New);
+    int cntOpen       = allTickets.Count(t => t.StatusEnum == TicketStatus.Open);
+    int cntInProgress = allTickets.Count(t => t.StatusEnum == TicketStatus.InProgress);
+    int cntWaiting    = allTickets.Count(t => t.StatusEnum == TicketStatus.WaitingForUser);
+    int cntResolved   = allTickets.Count(t => t.StatusEnum == TicketStatus.Resolved);
+
+    // Mapa: status → krok 0..3
+    int StatusStep(TicketStatus s) => s switch
+    {
+        TicketStatus.New             => 0,
+        TicketStatus.Open            => 1,
+        TicketStatus.InProgress      => 2,
+        TicketStatus.WaitingForUser  => 2,
+        TicketStatus.Resolved        => 3,
+        TicketStatus.Rejected        => -1,
+        _                            => 0
+    };
+
+    // Kolor lewego paska
+    string StatusAccent(TicketStatus s) => s switch
+    {
+        TicketStatus.New             => "#7c3aed",
+        TicketStatus.Open            => "#2563eb",
+        TicketStatus.InProgress      => "#d97706",
+        TicketStatus.WaitingForUser  => "#0891b2",
+        TicketStatus.Resolved        => "#16a34a",
+        TicketStatus.Rejected        => "#dc2626",
+        _                            => "#6b7280"
+    };
 }
 
 <div class="page-header d-flex justify-content-between align-items-center">
@@ -16,73 +50,150 @@
     </div>
 </div>
 
-<!-- Quick Filters -->
-<div class="d-flex gap-2 mb-4">
-    <a asp-action="MyTickets" class="btn @(Model.Filter?.Status == null ? "btn-primary" : "btn-outline-primary")">
+<!-- Quick Filters z licznikami -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    @{
+        var currentStatus = Model.Filter?.Status?.ToString();
+        string Cls(string? s) => currentStatus == s ? "btn-primary" : "btn-outline-secondary";
+    }
+    <a asp-action="MyTickets" class="btn @(Model.Filter?.Status == null ? "btn-primary" : "btn-outline-secondary")">
         Wszystkie
+        <span class="badge bg-white text-dark ms-1">@(Model.Tickets?.TotalCount ?? 0)</span>
     </a>
-    <a asp-action="MyTickets" asp-route-status="Open" class="btn @(Model.Filter?.Status?.ToString() == "Open" ? "btn-primary" : "btn-outline-primary")">
-        Otwarte
+    <a asp-action="MyTickets" asp-route-status="New" class="btn @Cls("New")">
+        <span class="status-dot" style="background:#7c3aed"></span> Nowe
+        @if (cntNew > 0) { <span class="badge bg-white text-dark ms-1">@cntNew</span> }
     </a>
-    <a asp-action="MyTickets" asp-route-status="InProgress" class="btn @(Model.Filter?.Status?.ToString() == "InProgress" ? "btn-primary" : "btn-outline-primary")">
-        W realizacji
+    <a asp-action="MyTickets" asp-route-status="Open" class="btn @Cls("Open")">
+        <span class="status-dot" style="background:#2563eb"></span> Otwarte
+        @if (cntOpen > 0) { <span class="badge bg-white text-dark ms-1">@cntOpen</span> }
     </a>
-    <a asp-action="MyTickets" asp-route-status="Resolved" class="btn @(Model.Filter?.Status?.ToString() == "Resolved" ? "btn-primary" : "btn-outline-primary")">
-        Rozwiązane
+    <a asp-action="MyTickets" asp-route-status="InProgress" class="btn @Cls("InProgress")">
+        <span class="status-dot" style="background:#d97706"></span> W realizacji
+        @if (cntInProgress > 0) { <span class="badge bg-white text-dark ms-1">@cntInProgress</span> }
+    </a>
+    <a asp-action="MyTickets" asp-route-status="WaitingForUser" class="btn @Cls("WaitingForUser")">
+        <span class="status-dot" style="background:#0891b2"></span> Oczekuje
+        @if (cntWaiting > 0) { <span class="badge bg-white text-dark ms-1">@cntWaiting</span> }
+    </a>
+    <a asp-action="MyTickets" asp-route-status="Resolved" class="btn @Cls("Resolved")">
+        <span class="status-dot" style="background:#16a34a"></span> Rozwiązane
+        @if (cntResolved > 0) { <span class="badge bg-white text-dark ms-1">@cntResolved</span> }
     </a>
 </div>
 
-<!-- Tickets List -->
-@if (Model.Tickets != null && Model.Tickets.Any())
+<!-- Tickets -->
+@if (allTickets.Any())
 {
-    @foreach (var ticket in Model.Tickets)
-    {
-        <div class="ticket-card">
-            <div class="ticket-card-header">
-                <div>
-                    <span class="ticket-number">#@ticket.TicketNumber</span>
-                    <span class="badge badge-status-@ticket.Status.ToString().ToLower() ms-2">@ticket.StatusDisplay</span>
+    <div class="d-flex flex-column gap-3">
+        @foreach (var ticket in allTickets)
+        {
+            var step     = StatusStep(ticket.StatusEnum);
+            var accent   = StatusAccent(ticket.StatusEnum);
+            var rejected = ticket.StatusEnum == TicketStatus.Rejected;
+
+            <div class="card shadow-sm" style="border-left: 4px solid @accent; border-top:none; border-right:none; border-bottom:none; border-radius:8px;">
+                <div class="card-body py-3 px-4">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <!-- Left: info -->
+                        <div class="flex-grow-1 min-width-0">
+                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                <span class="text-muted small fw-semibold">#@ticket.TicketNumber</span>
+                                <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">@ticket.PriorityDisplay</span>
+                                @if (ticket.IsOverdue)
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-circle me-1"></i>Przeterminowane
+                                    </span>
+                                }
+                            </div>
+
+                            <h6 class="mb-2 fw-semibold">
+                                <a asp-action="Details" asp-route-id="@ticket.Id" class="text-dark text-decoration-none stretched-link-title">
+                                    @ticket.Title
+                                </a>
+                            </h6>
+
+                            <div class="d-flex flex-wrap gap-3 text-muted small">
+                                <span><i class="bi bi-folder me-1"></i>@ticket.CategoryName</span>
+                                <span><i class="bi bi-calendar me-1"></i>@ticket.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                                @if (!string.IsNullOrEmpty(ticket.AssignedToName))
+                                {
+                                    <span><i class="bi bi-person-check me-1"></i>@ticket.AssignedToName</span>
+                                }
+                                @if (ticket.CommentsCount > 0)
+                                {
+                                    <span><i class="bi bi-chat me-1"></i>@ticket.CommentsCount</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Right: status tracker + button -->
+                        <div class="d-flex flex-column align-items-end gap-3 flex-shrink-0">
+                            @if (!rejected)
+                            {
+                                <!-- Progress stepper -->
+                                <div class="d-flex align-items-center gap-1" style="white-space:nowrap;">
+                                    @{
+                                        var steps = new[] {
+                                            ("Nowe",      0),
+                                            ("Otwarte",   1),
+                                            ("W trakcie", 2),
+                                            ("Gotowe",    3)
+                                        };
+                                    }
+                                    @for (int i = 0; i < steps.Length; i++)
+                                    {
+                                        var (label, idx) = steps[i];
+                                        bool done    = step > idx;
+                                        bool current = step == idx;
+
+                                        <div class="d-flex flex-column align-items-center" style="width:52px;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width:22px; height:22px; font-size:11px; font-weight:600;
+                                                        background: @(done ? accent : current ? accent : "#e5e7eb");
+                                                        color: @(done || current ? "white" : "#9ca3af");
+                                                        border: 2px solid @(done || current ? accent : "#e5e7eb");">
+                                                @if (done)
+                                                {
+                                                    <i class="bi bi-check" style="font-size:12px;"></i>
+                                                }
+                                                else
+                                                {
+                                                    @(i + 1)
+                                                }
+                                            </div>
+                                            <span style="font-size:9px; color:@(done || current ? accent : "#9ca3af"); margin-top:2px; font-weight:@(current ? "700" : "400")">
+                                                @label
+                                            </span>
+                                        </div>
+
+                                        @if (i < steps.Length - 1)
+                                        {
+                                            <div style="height:2px; width:16px; background:@(step > idx ? accent : "#e5e7eb"); margin-bottom:12px; flex-shrink:0;"></div>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger px-3 py-2">
+                                    <i class="bi bi-x-circle me-1"></i>Odrzucone
+                                </span>
+                            }
+
+                            <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i>Szczegóły
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">@ticket.PriorityDisplay</span>
             </div>
-            
-            <h5 class="ticket-title">
-                <a asp-action="Details" asp-route-id="@ticket.Id">@ticket.Title</a>
-            </h5>
-            
-            <div class="ticket-meta">
-                <span class="ticket-meta-item">
-                    <i class="bi bi-folder"></i>
-                    @ticket.CategoryName
-                </span>
-                <span class="ticket-meta-item">
-                    <i class="bi bi-calendar"></i>
-                    @ticket.CreatedAt.ToString("dd.MM.yyyy HH:mm")
-                </span>
-                @if (!string.IsNullOrEmpty(ticket.AssignedToName))
-                {
-                    <span class="ticket-meta-item">
-                        <i class="bi bi-person"></i>
-                        @ticket.AssignedToName
-                    </span>
-                }
-                <span class="ticket-meta-item">
-                    <i class="bi bi-chat"></i>
-                    @ticket.CommentsCount komentarzy
-                </span>
-            </div>
-            
-            <div class="mt-3">
-                <a asp-action="Details" asp-route-id="@ticket.Id" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-eye me-1"></i>
-                    Zobacz szczegóły
-                </a>
-            </div>
-        </div>
-    }
-    
+        }
+    </div>
+
     <!-- Pagination -->
-    @if (Model.Tickets.TotalPages > 1)
+    @if (Model.Tickets!.TotalPages > 1)
     {
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
@@ -90,7 +201,7 @@
                 {
                     <li class="page-item">
                         <a class="page-link" asp-action="MyTickets" asp-route-page="@(Model.Tickets.PageIndex - 1)">
-                            <i class="bi bi-chevron-left"></i> Poprzednia
+                            <i class="bi bi-chevron-left"></i>
                         </a>
                     </li>
                 }
@@ -104,7 +215,7 @@
                 {
                     <li class="page-item">
                         <a class="page-link" asp-action="MyTickets" asp-route-page="@(Model.Tickets.PageIndex + 1)">
-                            Następna <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
                         </a>
                     </li>
                 }
@@ -125,3 +236,13 @@ else
         </div>
     </div>
 }
+
+<style>
+    .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 2px;
+    }
+</style>

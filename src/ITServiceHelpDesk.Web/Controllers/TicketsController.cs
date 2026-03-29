@@ -236,14 +236,23 @@ public class TicketsController : Controller
     // ============================================
 
     [HttpGet]
-    [Authorize(Roles = "Agent,Admin")]
     public async Task<IActionResult> Edit(int id)
     {
         var ticket = await _ticketService.GetTicketByIdAsync(id);
         if (ticket == null)
         {
             TempData["ErrorMessage"] = "Zgłoszenie nie zostało znalezione.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(MyTickets));
+        }
+
+        var userId = _userManager.GetUserId(User);
+        var isAdmin = User.IsInRole("Admin");
+        var isOwner = ticket.CreatedByUserId == userId;
+
+        if (!isAdmin && !isOwner)
+        {
+            TempData["ErrorMessage"] = "Tylko właściciel zgłoszenia lub administrator może je edytować.";
+            return RedirectToAction(nameof(Details), new { id });
         }
 
         var model = new TicketEditViewModel
@@ -264,17 +273,19 @@ public class TicketsController : Controller
             Statuses = GetStatusSelectList(ticket.Status)
         };
 
-        var agents = await _userManager.GetUsersInRoleAsync("Agent");
-        var admins = await _userManager.GetUsersInRoleAsync("Admin");
-        var allAgents = agents.Union(admins).Where(u => u.IsActive).ToList();
-        model.Agents = new SelectList(allAgents.Select(a => new { a.Id, Name = a.FullName }), "Id", "Name", ticket.AssignedToUserId);
+        if (isAdmin)
+        {
+            var agents = await _userManager.GetUsersInRoleAsync("Agent");
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
+            var allAgents = agents.Union(admins).Where(u => u.IsActive).ToList();
+            model.Agents = new SelectList(allAgents.Select(a => new { a.Id, Name = a.FullName }), "Id", "Name", ticket.AssignedToUserId);
+        }
 
         return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Agent,Admin")]
     public async Task<IActionResult> Edit(TicketEditViewModel model)
     {
         if (!ModelState.IsValid)
@@ -288,6 +299,14 @@ public class TicketsController : Controller
         var userId = _userManager.GetUserId(User);
         if (userId == null) return RedirectToAction("Login", "Account");
 
+        var isAdmin = User.IsInRole("Admin");
+        var ticket = await _ticketService.GetTicketByIdAsync(model.Id);
+        if (ticket == null || (!isAdmin && ticket.CreatedByUserId != userId))
+        {
+            TempData["ErrorMessage"] = "Tylko właściciel zgłoszenia lub administrator może je edytować.";
+            return RedirectToAction(nameof(Details), new { id = model.Id });
+        }
+
         var result = await _ticketService.UpdateTicketAsync(model, userId);
         if (result)
         {
@@ -300,6 +319,37 @@ public class TicketsController : Controller
     }
 
     // ============================================
+    // REOPEN TICKET
+    // ============================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ReopenTicket(int ticketId)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return RedirectToAction("Login", "Account");
+
+        var ticket = await _ticketService.GetTicketByIdAsync(ticketId);
+        if (ticket == null || ticket.CreatedByUserId != userId)
+        {
+            TempData["ErrorMessage"] = "Nie masz uprawnień do wznowienia tego zgłoszenia.";
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+
+        var result = await _ticketService.ReopenTicketAsync(ticketId, userId);
+        if (result)
+        {
+            TempData["SuccessMessage"] = "Zgłoszenie zostało wznowione. Agent wróci do pracy nad nim.";
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Nie udało się wznowić zgłoszenia. Minęło 14 dni od rozwiązania lub status jest nieprawidłowy.";
+        }
+
+        return RedirectToAction(nameof(Details), new { id = ticketId });
+    }
+
+    // ============================================
     // CHANGE STATUS
     // ============================================
 
@@ -307,6 +357,12 @@ public class TicketsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeStatus(int ticketId, TicketStatus newStatus, string? resolutionSummary)
     {
+        if (newStatus == TicketStatus.Resolved && string.IsNullOrWhiteSpace(resolutionSummary))
+        {
+            TempData["ErrorMessage"] = "Musisz podać opis rozwiązania problemu przed oznaczeniem jako rozwiązane.";
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+
         var userId = _userManager.GetUserId(User);
         if (userId == null) return Json(new { success = false, message = "Nie jesteś zalogowany." });
 

@@ -83,6 +83,11 @@ public interface ITicketService
     Task<bool> TakeTicketAsync(int ticketId, string agentId);
     
     /// <summary>
+    /// Wznawia zgłoszenie (reopen przez właściciela w ciągu 14 dni od rozwiązania)
+    /// </summary>
+    Task<bool> ReopenTicketAsync(int ticketId, string userId);
+
+    /// <summary>
     /// Zmienia priorytet zgłoszenia
     /// </summary>
     Task<bool> ChangePriorityAsync(int ticketId, TicketPriority newPriority, string userId);

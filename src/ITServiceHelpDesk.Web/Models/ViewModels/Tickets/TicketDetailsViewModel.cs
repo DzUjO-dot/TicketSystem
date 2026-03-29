@@ -205,13 +205,15 @@ public class TicketDetailsViewModel
         var isOwner = ticket.CreatedByUserId == currentUserId;
         var isAssignedAgent = ticket.AssignedToUserId == currentUserId;
 
-        vm.CanEdit = (isOwner && ticket.IsOpen) || isAgent || isAdmin;
+        vm.CanEdit = (isOwner && ticket.IsOpen) || isAdmin;
         vm.CanComment = ticket.IsOpen || isAgent || isAdmin;
         vm.CanChangeStatus = isAgent || isAdmin;
         vm.CanAssign = isAgent || isAdmin;
-        vm.CanClose = (isOwner && ticket.Status == TicketStatus.Resolved) || isAgent || isAdmin;
-        vm.CanReopen = (isOwner || isAgent || isAdmin) && 
-                       (ticket.Status == TicketStatus.Closed || ticket.Status == TicketStatus.Rejected);
+        vm.CanClose = isAgent || isAdmin;
+        vm.CanReopen = isOwner &&
+                       ticket.Status == TicketStatus.Resolved &&
+                       ticket.ResolvedAt.HasValue &&
+                       (DateTime.UtcNow - ticket.ResolvedAt.Value).TotalDays <= 14;
         vm.CanAddInternalComment = isAgent || isAdmin;
 
         // Map comments

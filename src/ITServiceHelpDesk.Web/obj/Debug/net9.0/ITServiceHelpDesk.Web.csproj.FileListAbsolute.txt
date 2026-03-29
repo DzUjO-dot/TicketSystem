@@ -535,3 +535,5 @@ C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\obj\Debug\net9.0\ITS
 C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\obj\Debug\net9.0\ref\ITServiceHelpDesk.Web.dll
 C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
 C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\obj\Debug\net9.0\compressed\sx8smbqsan-{0}-uecjetj6ke-uecjetj6ke.gz
+C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\obj\Debug\net9.0\ITServiceHelpDesk.Web.sourcelink.json
+C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

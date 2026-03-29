@@ -28,6 +28,7 @@ public class TicketListItemViewModel
     public string Title { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public string StatusBadgeClass { get; set; } = string.Empty;
+    public Models.Enums.TicketStatus StatusEnum { get; set; }
     public string Priority { get; set; } = string.Empty;
     public string PriorityBadgeClass { get; set; } = string.Empty;
     public string CategoryName { get; set; } = string.Empty;
@@ -79,6 +80,7 @@ public class TicketListItemViewModel
             Title = ticket.Title,
             Status = GetStatusDisplayName(ticket.Status),
             StatusBadgeClass = GetStatusBadgeClass(ticket.Status),
+            StatusEnum = ticket.Status,
             Priority = GetPriorityDisplayName(ticket.Priority),
             PriorityBadgeClass = GetPriorityBadgeClass(ticket.Priority),
             CategoryName = ticket.Category.Name,

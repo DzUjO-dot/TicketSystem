@@ -1,6 +1,10 @@
 @model ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel
 @{
     ViewData["Title"] = $"Zgłoszenie #{Model.TicketNumber}";
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isOwner = Model.RequesterId == currentUserId;
+    var isAgentOrAdmin = User.IsInRole("Agent") || User.IsInRole("Admin");
+    var isAdmin = User.IsInRole("Admin");
 }
 
 <div class="page-header d-flex justify-content-between align-items-center">
@@ -13,7 +17,7 @@
         <p class="page-subtitle mb-0">@Model.Title</p>
     </div>
     <div class="page-actions">
-        @if (User.IsInRole("Agent") || User.IsInRole("Admin") || Model.RequesterId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+        @if (isOwner || isAdmin)
         {
             <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
                 <i class="bi bi-pencil me-2"></i>
@@ -40,7 +44,7 @@
                 <div style="white-space: pre-wrap;">@Model.Description</div>
             </div>
         </div>
-        
+
         <!-- Attachments -->
         @if (Model.Attachments != null && Model.Attachments.Any())
         {
@@ -73,7 +77,7 @@
                                         </a>
                                         <small class="text-muted">@attachment.FileSize</small>
                                     </div>
-                                    <a href="@attachment.FilePath" download class="btn btn-sm btn-outline-primary ms-2">
+                                    <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id" class="btn btn-sm btn-outline-primary ms-2">
                                         <i class="bi bi-download"></i>
                                     </a>
                                 </div>
@@ -83,7 +87,7 @@
                 </div>
             </div>
         }
-        
+
         <!-- Comments -->
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -95,7 +99,7 @@
             <div class="card-body">
                 @if (Model.Comments != null && Model.Comments.Any())
                 {
-                    @foreach (var comment in Model.Comments)
+                    @foreach (var comment in Model.Comments.Where(c => c.IsVisible))
                     {
                         <div class="comment @(comment.IsInternal ? "internal" : "")">
                             <div class="comment-header">
@@ -122,17 +126,18 @@
                     <p class="text-muted text-center mb-0">Brak komentarzy</p>
                 }
             </div>
-            
+
             <!-- Add Comment Form -->
             <div class="card-footer">
-                <form asp-action="AddComment" method="post">
+                <form asp-action="AddComment" asp-controller="Tickets" method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="ticketId" value="@Model.Id" />
                     <div class="mb-3">
-                        <textarea name="content" class="form-control" rows="3" 
+                        <textarea name="content" class="form-control" rows="3"
                                   placeholder="Napisz komentarz..." required></textarea>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+                        @if (isAgentOrAdmin)
                         {
                             <div class="form-check">
                                 <input type="checkbox" name="isInternal" value="true" class="form-check-input" id="isInternal">
@@ -153,52 +158,59 @@
                 </form>
             </div>
         </div>
-        
-        <!-- History -->
+
+        <!-- History — collapsible -->
         @if (Model.History != null && Model.History.Any())
         {
-            <div class="card">
-                <div class="card-header">
-                    <i class="bi bi-clock-history me-2"></i>
-                    Historia zmian
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center"
+                     role="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse"
+                     aria-expanded="false" style="cursor:pointer; user-select:none;">
+                    <span>
+                        <i class="bi bi-clock-history me-2"></i>
+                        Historia zmian (@Model.History.Count)
+                    </span>
+                    <i class="bi bi-chevron-down" id="historyChevron"></i>
                 </div>
-                <div class="card-body">
-                    <div class="timeline">
-                        @foreach (var entry in Model.History)
-                        {
-                            <div class="timeline-item">
-                                <div class="timeline-icon">
-                                    <i class="bi bi-circle-fill"></i>
-                                </div>
-                                <div class="timeline-content">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <strong>@entry.FieldName</strong>
-                                            @if (!string.IsNullOrEmpty(entry.OldValue) && !string.IsNullOrEmpty(entry.NewValue))
-                                            {
-                                                <span class="text-muted">zmieniono z</span>
-                                                <span class="badge bg-secondary">@entry.OldValue</span>
-                                                <span class="text-muted">na</span>
-                                                <span class="badge bg-primary">@entry.NewValue</span>
-                                            }
-                                            else if (!string.IsNullOrEmpty(entry.NewValue))
-                                            {
-                                                <span class="text-muted">ustawiono na</span>
-                                                <span class="badge bg-primary">@entry.NewValue</span>
-                                            }
-                                        </div>
-                                        <small class="timeline-time">@entry.ChangedAt.ToString("dd.MM HH:mm")</small>
+                <div id="historyCollapse" class="collapse">
+                    <div class="card-body">
+                        <div class="timeline">
+                            @foreach (var entry in Model.History)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        <i class="bi bi-circle-fill"></i>
                                     </div>
-                                    <small class="text-muted">przez @entry.ChangedByName</small>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong>@entry.FieldName</strong>
+                                                @if (!string.IsNullOrEmpty(entry.OldValue) && !string.IsNullOrEmpty(entry.NewValue))
+                                                {
+                                                    <span class="text-muted">zmieniono z</span>
+                                                    <span class="badge bg-secondary">@entry.OldValue</span>
+                                                    <span class="text-muted">na</span>
+                                                    <span class="badge bg-primary">@entry.NewValue</span>
+                                                }
+                                                else if (!string.IsNullOrEmpty(entry.NewValue))
+                                                {
+                                                    <span class="text-muted">ustawiono na</span>
+                                                    <span class="badge bg-primary">@entry.NewValue</span>
+                                                }
+                                            </div>
+                                            <small class="timeline-time">@entry.ChangedAt.ToString("dd.MM HH:mm")</small>
+                                        </div>
+                                        <small class="text-muted">przez @entry.ChangedByName</small>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         }
     </div>
-    
+
     <!-- Sidebar -->
     <div class="col-lg-4">
         <!-- Ticket Info -->
@@ -277,9 +289,23 @@
                 </table>
             </div>
         </div>
-        
-        <!-- Quick Actions -->
-        @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+
+        <!-- Resolution Summary -->
+        @if (!string.IsNullOrEmpty(Model.ResolutionSummary))
+        {
+            <div class="card border-success mb-4">
+                <div class="card-header text-success">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Rozwiązanie
+                </div>
+                <div class="card-body">
+                    <p class="mb-0" style="white-space: pre-wrap;">@Model.ResolutionSummary</p>
+                </div>
+            </div>
+        }
+
+        <!-- Agent Actions -->
+        @if (isAgentOrAdmin)
         {
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-3">
@@ -287,7 +313,8 @@
                     <div class="d-flex flex-column gap-2">
                         @if (string.IsNullOrEmpty(Model.AssignedToName))
                         {
-                            <form asp-action="Take" method="post">
+                            <form asp-action="Take" asp-controller="Tickets" method="post">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="ticketId" value="@Model.Id" />
                                 <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
                                         style="background:#eff6ff;color:#2563eb">
@@ -296,44 +323,115 @@
                             </form>
                         }
                         @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.InProgress &&
-                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Closed &&
                              Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
                         {
-                            <form asp-action="ChangeStatus" method="post">
+                            <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
+                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="ticketId" value="@Model.Id" />
-                                <input type="hidden" name="newStatus" value="InProgress" />
+                                <input type="hidden" name="newStatus" value="2" />
                                 <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
                                         style="background:#f0f9ff;color:#0284c7">
                                     <i class="bi bi-play-circle me-2"></i>Rozpocznij pracę
                                 </button>
                             </form>
                         }
-                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved &&
-                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Closed)
+                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
                         {
-                            <form asp-action="ChangeStatus" method="post">
-                                <input type="hidden" name="ticketId" value="@Model.Id" />
-                                <input type="hidden" name="newStatus" value="Resolved" />
-                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
-                                        style="background:#f0fdf4;color:#16a34a">
-                                    <i class="bi bi-check-circle me-2"></i>Oznacz jako rozwiązane
-                                </button>
-                            </form>
-                        }
-                        @if (Model.Status == ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
-                        {
-                            <form asp-action="ChangeStatus" method="post">
-                                <input type="hidden" name="ticketId" value="@Model.Id" />
-                                <input type="hidden" name="newStatus" value="Closed" />
-                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
-                                        style="background:#f8fafc;color:#64748b">
-                                    <i class="bi bi-archive me-2"></i>Zamknij zgłoszenie
-                                </button>
-                            </form>
+                            <button type="button" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
+                                    style="background:#f0fdf4;color:#16a34a"
+                                    data-bs-toggle="modal" data-bs-target="#resolutionModal">
+                                <i class="bi bi-check-circle me-2"></i>Oznacz jako rozwiązane
+                            </button>
                         }
                     </div>
                 </div>
             </div>
         }
+
+        <!-- Owner: Reopen (within 14 days of resolution) -->
+        @if (Model.CanReopen)
+        {
+            <div class="card border-warning mb-4">
+                <div class="card-body p-3">
+                    <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
+                        <i class="bi bi-exclamation-triangle me-1 text-warning"></i>
+                        Niezadowolony z rozwiązania?
+                    </p>
+                    <p class="small text-muted mb-3">
+                        Możesz wznowić zgłoszenie w ciągu 14 dni od jego rozwiązania.
+                        @if (Model.ResolvedAt.HasValue)
+                        {
+                            var daysLeft = 14 - (int)(DateTime.UtcNow - Model.ResolvedAt.Value).TotalDays;
+                            <br /><strong>Pozostało: @daysLeft dni</strong>
+                        }
+                    </p>
+                    <form asp-action="ReopenTicket" asp-controller="Tickets" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ticketId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="bi bi-arrow-counterclockwise me-2"></i>Wznów zgłoszenie
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
     </div>
 </div>
+
+<!-- Modal: Rozwiązanie -->
+@if (isAgentOrAdmin)
+{
+    <div class="modal fade" id="resolutionModal" tabindex="-1" aria-labelledby="resolutionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resolutionModalLabel">
+                        <i class="bi bi-check-circle text-success me-2"></i>Opis rozwiązania
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+                </div>
+                <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" name="ticketId" value="@Model.Id" />
+                        <input type="hidden" name="newStatus" value="4" />
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Co rozwiązało problem? <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="resolutionSummary" class="form-control" rows="5"
+                                      placeholder="Opisz co zostało zrobione, aby rozwiązać zgłoszenie..."
+                                      required minlength="10"></textarea>
+                            <div class="form-text">Pole wymagane (min. 10 znaków).</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Anuluj</button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>Oznacz jako rozwiązane
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Obrót strzałki przy rozwijaniu historii
+        document.addEventListener('DOMContentLoaded', function () {
+            var collapseEl = document.getElementById('historyCollapse');
+            if (collapseEl) {
+                collapseEl.addEventListener('show.bs.collapse', function () {
+                    var chevron = document.getElementById('historyChevron');
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                });
+                collapseEl.addEventListener('hide.bs.collapse', function () {
+                    var chevron = document.getElementById('historyChevron');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                });
+            }
+        });
+    </script>
+}

@@ -252,11 +252,17 @@ public class TicketService : ITicketService
 
         if (filter != null)
         {
+            // domyślnie ukryj rozwiązane/zamknięte, chyba że agent jawnie filtruje po statusie
+            if (!filter.Status.HasValue)
+            {
+                query = query.Where(t => t.Status != TicketStatus.Resolved && t.Status != TicketStatus.Closed);
+            }
             query = ApplyFilters(query, filter);
             query = ApplySorting(query, filter.SortBy, filter.SortDescending);
         }
         else
         {
+            query = query.Where(t => t.Status != TicketStatus.Resolved && t.Status != TicketStatus.Closed);
             query = query.OrderByDescending(t => t.Priority).ThenByDescending(t => t.CreatedAt);
         }
 
@@ -307,6 +313,10 @@ public class TicketService : ITicketService
         else if (newStatus == TicketStatus.Closed)
         {
             ticket.ClosedAt = DateTime.UtcNow;
+            if (!string.IsNullOrWhiteSpace(resolutionSummary))
+            {
+                ticket.ResolutionSummary = resolutionSummary;
+            }
             if (!ticket.ResolvedAt.HasValue)
             {
                 ticket.ResolvedAt = DateTime.UtcNow;
@@ -373,6 +383,29 @@ public class TicketService : ITicketService
     public async Task<bool> TakeTicketAsync(int ticketId, string agentId)
     {
         return await AssignTicketAsync(ticketId, agentId, agentId);
+    }
+
+    public async Task<bool> ReopenTicketAsync(int ticketId, string userId)
+    {
+        var ticket = await _context.Tickets.FindAsync(ticketId);
+        if (ticket == null) return false;
+        if (ticket.Status != TicketStatus.Resolved) return false;
+        if (ticket.ResolvedAt.HasValue && (DateTime.UtcNow - ticket.ResolvedAt.Value).TotalDays > 14) return false;
+
+        ticket.Status = TicketStatus.Open;
+        ticket.ResolvedAt = null;
+        ticket.ResolutionSummary = null;
+        ticket.UpdatedAt = DateTime.UtcNow;
+
+        await AddHistoryAsync(ticketId, userId, "Wznowiono",
+            TicketStatus.Resolved.ToString(), TicketStatus.Open.ToString(),
+            "Zgłoszenie wznowione przez zgłaszającego — niezadowolony z rozwiązania");
+
+        await _context.SaveChangesAsync();
+
+        await _notificationService.NotifyStatusChangedAsync(ticket, TicketStatus.Resolved, TicketStatus.Open);
+
+        return true;
     }
 
     public async Task<bool> ChangePriorityAsync(int ticketId, TicketPriority newPriority, string userId)
