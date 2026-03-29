@@ -1,0 +1,77 @@
+@model ITServiceHelpDesk.Models.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Rejestracja";
+    Layout = "_Layout";
+}
+
+<div class="auth-card">
+    <div class="auth-logo">
+        <i class="bi bi-headset"></i>
+        <h1>IT HelpDesk</h1>
+        <p>Utwórz nowe konto</p>
+    </div>
+    
+    <form asp-action="Register" asp-controller="Account" method="post">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label asp-for="FirstName" class="form-label">Imię</label>
+                <input asp-for="FirstName" class="form-control" placeholder="Jan" />
+                <span asp-validation-for="FirstName" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label asp-for="LastName" class="form-label">Nazwisko</label>
+                <input asp-for="LastName" class="form-control" placeholder="Kowalski" />
+                <span asp-validation-for="LastName" class="text-danger small"></span>
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label">Adres e-mail</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input asp-for="Email" class="form-control" placeholder="twoj@email.pl" autocomplete="email" />
+            </div>
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="Department" class="form-label">Dział (opcjonalnie)</label>
+            <input asp-for="Department" class="form-control" placeholder="np. IT, HR, Księgowość" />
+            <span asp-validation-for="Department" class="text-danger small"></span>
+        </div>
+        
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label">Hasło</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input asp-for="Password" class="form-control" placeholder="••••••••" autocomplete="new-password" />
+            </div>
+            <span asp-validation-for="Password" class="text-danger small"></span>
+            <small class="text-muted">Min. 6 znaków, wielka litera, cyfra, znak specjalny</small>
+        </div>
+        
+        <div class="mb-4">
+            <label asp-for="ConfirmPassword" class="form-label">Powtórz hasło</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="••••••••" autocomplete="new-password" />
+            </div>
+            <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+        </div>
+        
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+            <i class="bi bi-person-plus"></i>
+            Zarejestruj się
+        </button>
+        
+        <p class="text-center text-muted mb-0">
+            Masz już konto? <a asp-action="Login" asp-controller="Account">Zaloguj się</a>
+        </p>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

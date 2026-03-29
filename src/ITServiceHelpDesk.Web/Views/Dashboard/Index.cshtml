@@ -1,0 +1,16 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (User.IsInRole("Admin"))
+{
+    <partial name="_AdminDashboard" />
+}
+else if (User.IsInRole("Agent"))
+{
+    <partial name="_AgentDashboard" />
+}
+else
+{
+    <partial name="_UserDashboard" />
+}

@@ -1,0 +1,150 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Log aktywności";
+    var currentPage = (int)ViewBag.CurrentPage;
+    var totalPages = (int)ViewBag.TotalPages;
+    var totalCount = (int)ViewBag.TotalCount;
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Log aktywności</h1>
+        <p class="page-subtitle">Historia wszystkich działań w systemie</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Powrót
+    </a>
+</div>
+
+<!-- Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="AuditLog" method="get" class="row g-3">
+            <div class="col-md-10">
+                <input type="text" name="searchTerm" value="@searchTerm" class="form-control" 
+                       placeholder="Szukaj po akcji, typie encji lub szczegółach...">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-1"></i> Szukaj
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-journal-text me-2"></i>
+        Historia aktywności (@totalCount wpisów)
+    </div>
+    <div class="card-body p-0">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data i czas</th>
+                            <th>Użytkownik</th>
+                            <th>Akcja</th>
+                            <th>Typ</th>
+                            <th>ID encji</th>
+                            <th>Szczegóły</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <small>@(((DateTime)log.Timestamp).ToString("dd.MM.yyyy HH:mm:ss"))</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@log.UserName</span>
+                                </td>
+                                <td>
+                                    @{
+                                        var actionClass = "bg-info";
+                                        var action = (string)log.Action;
+                                        if (action.Contains("Create")) actionClass = "bg-success";
+                                        else if (action.Contains("Delete")) actionClass = "bg-danger";
+                                        else if (action.Contains("Update") || action.Contains("Change")) actionClass = "bg-warning text-dark";
+                                    }
+                                    <span class="badge @actionClass">@log.Action</span>
+                                </td>
+                                <td>@log.EntityType</td>
+                                <td>
+                                    <code>@(log.EntityId ?? "-")</code>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty((string?)log.Details))
+                                    {
+                                        <small class="text-muted">@log.Details</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <span class="text-muted">
+                        Strona @currentPage z @totalPages
+                    </span>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="AuditLog" asp-route-page="@(currentPage - 1)" asp-route-searchTerm="@searchTerm">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            }
+                            
+                            @{
+                                var startPage = Math.Max(1, currentPage - 2);
+                                var endPage = Math.Min(totalPages, currentPage + 2);
+                            }
+                            
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" asp-action="AuditLog" asp-route-page="@i" asp-route-searchTerm="@searchTerm">@i</a>
+                                </li>
+                            }
+                            
+                            @if (currentPage < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="AuditLog" asp-route-page="@(currentPage + 1)" asp-route-searchTerm="@searchTerm">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-journal text-muted" style="font-size: 64px;"></i>
+                <h5 class="mt-3">Brak wpisów</h5>
+                <p class="text-muted">Nie znaleziono żadnych wpisów w logu aktywności.</p>
+            </div>
+        }
+    </div>
+</div>

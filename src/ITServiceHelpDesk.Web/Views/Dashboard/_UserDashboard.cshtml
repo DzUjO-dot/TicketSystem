@@ -1,0 +1,163 @@
+@model dynamic
+@{
+    var stats = Model.Stats as dynamic;
+    var recentTickets = Model.RecentTickets as IEnumerable<dynamic>;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Witaj, @User.Identity?.Name!</h1>
+        <p class="page-subtitle">Panel użytkownika - zarządzaj swoimi zgłoszeniami</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nowe zgłoszenie
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.TotalTickets ?? 0)</div>
+                <div class="stat-label">Wszystkie zgłoszenia</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.OpenTickets ?? 0)</div>
+                <div class="stat-label">Otwarte</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon info">
+                <i class="bi bi-arrow-repeat"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.InProgressTickets ?? 0)</div>
+                <div class="stat-label">W realizacji</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.ResolvedTickets ?? 0)</div>
+                <div class="stat-label">Rozwiązane</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions & Recent Tickets -->
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>
+                Szybkie akcje
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Tickets" asp-action="Create" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Zgłoś nowy problem
+                    </a>
+                    <a asp-controller="Tickets" asp-action="MyTickets" class="btn btn-outline-secondary">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Zobacz wszystkie moje zgłoszenia
+                    </a>
+                    <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-secondary">
+                        <i class="bi bi-person me-2"></i>
+                        Edytuj profil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-clock-history me-2"></i>
+                Ostatnie zgłoszenia
+                <a asp-controller="Tickets" asp-action="MyTickets" class="btn btn-sm btn-outline-primary ms-auto">
+                    Zobacz wszystkie
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (recentTickets != null && recentTickets.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nr</th>
+                                    <th>Tytuł</th>
+                                    <th>Status</th>
+                                    <th>Priorytet</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ticket in recentTickets)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">
+                                                #@ticket.TicketNumber
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="text-dark">
+                                                @ticket.Title
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-status-@ticket.Status.ToString().ToLower()">
+                                                @ticket.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">
+                                                @ticket.Priority
+                                            </span>
+                                        </td>
+                                        <td>@ticket.CreatedAt.ToString("dd.MM.yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3 mb-0">Nie masz jeszcze żadnych zgłoszeń</p>
+                        <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary mt-3">
+                            <i class="bi bi-plus-lg me-2"></i>
+                            Utwórz pierwsze zgłoszenie
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

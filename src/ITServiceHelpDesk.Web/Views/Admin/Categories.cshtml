@@ -1,0 +1,159 @@
+@model IEnumerable<ITServiceHelpDesk.Models.Entities.Category>
+@{
+    ViewData["Title"] = "Zarządzanie kategoriami";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Zarządzanie kategoriami</h1>
+        <p class="page-subtitle">Dodawaj, edytuj i usuwaj kategorie zgłoszeń</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nowa kategoria
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+            <i class="bi bi-arrow-left me-2"></i>
+            Powrót
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-tags me-2"></i>
+        Lista kategorii (@Model.Count())
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nazwa</th>
+                        <th>Opis</th>
+                        <th>Liczba zgłoszeń</th>
+                        <th>Status</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td><strong>@category.Name</strong></td>
+                            <td>@(category.Description ?? "-")</td>
+                            <td>
+                                <span class="badge bg-secondary">@(category.Tickets?.Count ?? 0)</span>
+                            </td>
+                            <td>
+                                @if (category.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktywna</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Nieaktywna</span>
+                                }
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-primary me-1" 
+                                        data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+                                        data-id="@category.Id"
+                                        data-name="@category.Name"
+                                        data-description="@category.Description">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                
+                                <form asp-action="ToggleCategoryStatus" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@category.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary me-1" 
+                                            title="@(category.IsActive ? "Dezaktywuj" : "Aktywuj")">
+                                        <i class="bi bi-power"></i>
+                                    </button>
+                                </form>
+                                
+                                <form asp-action="DeleteCategory" method="post" class="d-inline"
+                                      onsubmit="return confirm('Czy na pewno chcesz usunąć tę kategorię?');">
+                                    <input type="hidden" name="id" value="@category.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            title="Usuń">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="CreateCategory" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nowa kategoria</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nazwa kategorii <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opis (opcjonalnie)</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Utwórz kategorię</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="UpdateCategory" method="post">
+                <input type="hidden" name="id" id="editCategoryId" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Edytuj kategorię</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nazwa kategorii <span class="text-danger">*</span></label>
+                        <input type="text" name="name" id="editCategoryName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Opis (opcjonalnie)</label>
+                        <textarea name="description" id="editCategoryDescription" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Anuluj</button>
+                    <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('editCategoryModal').addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            document.getElementById('editCategoryId').value = button.getAttribute('data-id');
+            document.getElementById('editCategoryName').value = button.getAttribute('data-name');
+            document.getElementById('editCategoryDescription').value = button.getAttribute('data-description') || '';
+        });
+    </script>
+}

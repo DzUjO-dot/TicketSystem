@@ -1,0 +1,135 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Zarządzanie użytkownikami";
+    var roles = ViewBag.Roles as IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Zarządzanie użytkownikami</h1>
+        <p class="page-subtitle">Przeglądaj i zarządzaj kontami użytkowników</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-2"></i>
+        Powrót
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-people me-2"></i>
+        Lista użytkowników (@Model.Count())
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Użytkownik</th>
+                        <th>Email</th>
+                        <th>Dział</th>
+                        <th>Rola</th>
+                        <th>Status</th>
+                        <th>Data rejestracji</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        var userRoles = (IList<string>)user.Roles;
+                        var currentRole = userRoles.FirstOrDefault() ?? "User";
+                        
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2" style="width: 32px; height: 32px; font-size: 12px;">
+                                        @(((string)user.FirstName)?.Substring(0, 1).ToUpper())@(((string)user.LastName)?.Substring(0, 1).ToUpper())
+                                    </div>
+                                    <strong>@user.FullName</strong>
+                                </div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>@(user.Department ?? "-")</td>
+                            <td>
+                                @if (currentRole == "Admin")
+                                {
+                                    <span class="badge bg-danger">Administrator</span>
+                                }
+                                else if (currentRole == "Agent")
+                                {
+                                    <span class="badge bg-primary">Agent</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Użytkownik</span>
+                                }
+                            </td>
+                            <td>
+                                @if ((bool)user.IsActive)
+                                {
+                                    <span class="badge bg-success">Aktywny</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Nieaktywny</span>
+                                }
+                            </td>
+                            <td>@(((DateTime)user.CreatedAt).ToString("dd.MM.yyyy"))</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li class="dropdown-header">Zmień rolę</li>
+                                        @if (roles != null)
+                                        {
+                                            @foreach (var role in roles)
+                                            {
+                                                <li>
+                                                    <form asp-action="ChangeUserRole" method="post" class="d-inline">
+                                                        <input type="hidden" name="userId" value="@user.Id" />
+                                                        <input type="hidden" name="role" value="@role.Name" />
+                                                        <button type="submit" class="dropdown-item @(currentRole == role.Name ? "active" : "")">
+                                                            @role.Name
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                            }
+                                        }
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form asp-action="ToggleUserStatus" method="post" class="d-inline">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="dropdown-item">
+                                                    <i class="bi bi-power me-2"></i>
+                                                    @((bool)user.IsActive ? "Dezaktywuj" : "Aktywuj")
+                                                </button>
+                                            </form>
+                                        </li>
+                                        <li>
+                                            <form asp-action="DeleteUser" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Czy na pewno chcesz usunąć tego użytkownika?');">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="bi bi-trash me-2"></i>
+                                                    Usuń
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <i class="bi bi-info-circle me-2"></i>
+    <strong>Wskazówka:</strong> Użyj menu przy każdym użytkowniku, aby zmienić rolę lub status konta.
+</div>

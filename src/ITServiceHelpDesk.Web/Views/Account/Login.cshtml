@@ -1,0 +1,101 @@
+@model ITServiceHelpDesk.Models.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Logowanie";
+    Layout = "_Layout";
+}
+
+<div class="auth-card">
+    <div class="auth-logo">
+        <i class="bi bi-headset"></i>
+        <h1>IT HelpDesk</h1>
+        <p>Zaloguj się do systemu</p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            @Html.Raw(TempData["InfoMessage"])
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage as string))
+    {
+        <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <!-- === LOGOWANIE MICROSOFT SSO === -->
+    <a asp-action="MicrosoftLogin" asp-controller="Account"
+       asp-route-returnUrl="@ViewData["ReturnUrl"]"
+       class="btn btn-primary w-100 btn-lg mb-3 d-flex align-items-center justify-content-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 21 21" fill="none">
+            <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+            <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+            <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+            <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+        </svg>
+        Zaloguj się przez Microsoft
+    </a>
+
+    <p class="text-center text-muted small mb-4">
+        Użytkownicy firmy logują się kontem Microsoft (Azure AD / M365)
+    </p>
+
+    <!-- === SEPARATOR === -->
+    <div class="d-flex align-items-center mb-3">
+        <hr class="flex-grow-1">
+        <span class="mx-2 text-muted small">lub</span>
+        <hr class="flex-grow-1">
+    </div>
+
+    <!-- === LOGOWANIE LOKALNE (tylko Admin techniczny) === -->
+    <div>
+        <p class="text-center text-muted small mb-2">
+            <i class="bi bi-shield-lock me-1"></i>
+            Logowanie dla administratora technicznego
+        </p>
+
+        <form asp-action="Login" asp-controller="Account" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+            <input type="hidden" asp-for="ReturnUrl" />
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">Email administratora</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-lock"></i></span>
+                    <input asp-for="Email" class="form-control" placeholder="admin@helpdesk.local" autocomplete="email" />
+                </div>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="form-label">Hasło</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input asp-for="Password" class="form-control" placeholder="••••••••" autocomplete="current-password" />
+                </div>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-outline-secondary w-100">
+                <i class="bi bi-box-arrow-in-right me-1"></i>
+                Zaloguj jako administrator
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

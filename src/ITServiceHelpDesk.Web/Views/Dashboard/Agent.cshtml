@@ -1,0 +1,170 @@
+@using ITServiceHelpDesk.Models.ViewModels.Tickets
+@using ITServiceHelpDesk.Services.Interfaces
+@{
+    ViewData["Title"] = "Dashboard Agenta";
+    var stats = ViewBag.Stats as AgentTicketStatsViewModel;
+    var assignedTickets = ViewBag.AssignedTickets as List<TicketListItemViewModel>;
+    var unassignedTickets = ViewBag.UnassignedTickets as List<TicketListItemViewModel>;
+    var userName = (ViewBag.UserName as string ?? User.Identity?.Name ?? "Agent").Split(' ')[0];
+}
+
+<!-- Header -->
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title mb-1">Cześć, @userName!</h1>
+        <p class="text-muted mb-0">@DateTime.Now.ToString("dddd, d MMMM yyyy", new System.Globalization.CultureInfo("pl-PL"))</p>
+    </div>
+    <a asp-controller="Tickets" asp-action="Unassigned" class="btn btn-primary">
+        <i class="bi bi-inbox me-2"></i>Nieprzypisane (@(stats?.UnassignedTickets ?? 0))
+    </a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#dbeafe">
+                    <i class="bi bi-person-check" style="font-size:1.5rem;color:#2563eb"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.AssignedToMe ?? 0)</div>
+                    <div class="text-muted small">Przypisane do mnie</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fef3c7">
+                    <i class="bi bi-inbox" style="font-size:1.5rem;color:#d97706"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.UnassignedTickets ?? 0)</div>
+                    <div class="text-muted small">Nieprzypisane</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fee2e2">
+                    <i class="bi bi-exclamation-triangle" style="font-size:1.5rem;color:#dc2626"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.OverdueTickets ?? 0)</div>
+                    <div class="text-muted small">Przeterminowane</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#d1fae5">
+                    <i class="bi bi-check-circle" style="font-size:1.5rem;color:#059669"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.ResolvedToday ?? 0)</div>
+                    <div class="text-muted small">Rozwiązane dziś</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Assigned Tickets -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-person-check me-2 text-primary"></i>Moje zgłoszenia</h6>
+                <a asp-controller="Tickets" asp-action="AssignedToMe" class="btn btn-sm btn-outline-primary">
+                    Wszystkie <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (assignedTickets != null && assignedTickets.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ticket in assignedTickets)
+                        {
+                            <a href="@Url.Action("Details", "Tickets", new { id = ticket.Id })"
+                               class="list-group-item list-group-item-action px-4 py-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1 me-2">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <code class="text-primary small fw-bold">@ticket.TicketNumber</code>
+                                            <span class="badge @ticket.StatusBadgeClass" style="font-size:10px">@ticket.StatusDisplay</span>
+                                        </div>
+                                        <div class="fw-medium text-truncate" style="max-width:220px">@ticket.Title</div>
+                                        <div class="text-muted small">@ticket.RequesterName</div>
+                                    </div>
+                                    <span class="badge @ticket.PriorityBadgeClass small">@ticket.PriorityDisplay</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle text-success d-block mb-2" style="font-size:2.5rem"></i>
+                        <p class="text-muted small mb-0">Brak przypisanych zgłoszeń</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Unassigned Tickets -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-inbox me-2 text-warning"></i>Nieprzypisane</h6>
+                <a asp-controller="Tickets" asp-action="Unassigned" class="btn btn-sm btn-outline-warning">
+                    Wszystkie <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (unassignedTickets != null && unassignedTickets.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ticket in unassignedTickets)
+                        {
+                            <div class="list-group-item px-4 py-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1 me-2">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <code class="text-primary small fw-bold">@ticket.TicketNumber</code>
+                                            <span class="badge bg-secondary" style="font-size:10px">@ticket.CategoryName</span>
+                                        </div>
+                                        <div class="fw-medium text-truncate" style="max-width:220px">
+                                            <a href="@Url.Action("Details", "Tickets", new { id = ticket.Id })" class="text-dark text-decoration-none">@ticket.Title</a>
+                                        </div>
+                                        <div class="text-muted small">@ticket.RequesterName</div>
+                                    </div>
+                                    <form asp-controller="Tickets" asp-action="Take" method="post" class="d-inline">
+                                        <input type="hidden" name="ticketId" value="@ticket.Id" />
+                                        <button type="submit" class="btn btn-sm btn-primary" title="Przejmij">
+                                            <i class="bi bi-person-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted d-block mb-2" style="font-size:2.5rem"></i>
+                        <p class="text-muted small mb-0">Brak nieprzypisanych zgłoszeń</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IT Service HelpDesk</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="@(User.Identity?.IsAuthenticated == true ? "has-sidebar" : "")">
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="bi bi-headset"></i>
+                    <span>IT HelpDesk</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")" 
+                           asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-section">Zgłoszenia</li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "MyTickets" ? "active" : "")" 
+                           asp-controller="Tickets" asp-action="MyTickets">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <span>Moje zgłoszenia</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Tickets" asp-action="Create">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Nowe zgłoszenie</span>
+                        </a>
+                    </li>
+                    
+                    @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+                    {
+                        <li class="nav-section">Agent</li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "AssignedToMe" ? "active" : "")" 
+                               asp-controller="Tickets" asp-action="AssignedToMe">
+                                <i class="bi bi-person-check"></i>
+                                <span>Przypisane do mnie</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Unassigned" ? "active" : "")" 
+                               asp-controller="Tickets" asp-action="Unassigned">
+                                <i class="bi bi-inbox"></i>
+                                <span>Nieprzypisane</span>
+                            </a>
+                        </li>
+                    }
+                    
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-section">Administracja</li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" && ViewContext.RouteData.Values["controller"]?.ToString() == "Tickets" ? "active" : "")" 
+                               asp-controller="Tickets" asp-action="Index">
+                                <i class="bi bi-list-ul"></i>
+                                <span>Wszystkie zgłoszenia</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")" 
+                               asp-controller="Admin" asp-action="Index">
+                                <i class="bi bi-gear"></i>
+                                <span>Panel admina</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a asp-controller="Account" asp-action="Profile" class="user-info">
+                    <div class="user-avatar">
+                        @{
+                            var initials = User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U";
+                        }
+                        @initials
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">@User.Identity?.Name</span>
+                        <span class="user-role">
+                            @if (User.IsInRole("Admin")) { <text>Administrator</text> }
+                            else if (User.IsInRole("Agent")) { <text>Agent HelpDesk</text> }
+                            else { <text>Użytkownik</text> }
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <button class="btn btn-link sidebar-toggle d-lg-none" type="button" onclick="toggleSidebar()">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <div class="navbar-search">
+                    <form asp-controller="Tickets" asp-action="MyTickets" method="get">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" name="SearchTerm" class="form-control" placeholder="Szukaj zgłoszeń...">
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="navbar-actions ms-auto">
+                    <div class="dropdown" id="notificationDropdown">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                data-count-url="@Url.Action("GetUnreadNotificationCount", "Account")">
+                            <i class="bi bi-bell"></i>
+                            <span class="badge-notification d-none" id="notif-badge">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end notification-dropdown" style="min-width:320px; max-height:420px; overflow-y:auto">
+                            @await Component.InvokeAsync("Notifications")
+                        </ul>
+                    </div>
+                    
+                    <div class="dropdown">
+                        <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="bi bi-person me-2"></i>Profil</a></li>
+                            @if (User.Identity?.Name?.EndsWith("@helpdesk.local") == true)
+                            {
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="bi bi-key me-2"></i>Zmień hasło</a></li>
+                            }
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post">
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Wyloguj
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Alerts -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle me-2"></i>
+                        @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                @if (TempData["InfoMessage"] != null)
+                {
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        @Html.Raw(TempData["InfoMessage"])
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                
+                @RenderBody()
+            </div>
+        </main>
+    }
+    else
+    {
+        <!-- Public Layout (Login/Register) -->
+        <main class="auth-layout">
+            @RenderBody()
+        </main>
+    }
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="~/js/site.js"></script>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <script>
+            (function () {
+                const btn = document.querySelector('#notificationDropdown [data-count-url]');
+                if (!btn) return;
+                fetch(btn.dataset.countUrl)
+                    .then(r => r.json())
+                    .then(count => {
+                        const badge = document.getElementById('notif-badge');
+                        if (count > 0) {
+                            badge.textContent = count > 9 ? '9+' : count;
+                            badge.classList.remove('d-none');
+                        }
+                    })
+                    .catch(() => {});
+            })();
+        </script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

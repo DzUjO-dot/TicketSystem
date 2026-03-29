@@ -1,0 +1,140 @@
+@model ITServiceHelpDesk.Models.ViewModels.Account.ProfileViewModel
+@{
+    ViewData["Title"] = "Mój profil";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Mój profil</h1>
+        <p class="page-subtitle">Zarządzaj swoimi danymi osobowymi</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="user-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 32px; background: var(--primary);">
+                    @Model.FirstName?.Substring(0, 1).ToUpper()@Model.LastName?.Substring(0, 1).ToUpper()
+                </div>
+                <h5 class="mb-1">@Model.FirstName @Model.LastName</h5>
+                <p class="text-muted mb-3">@Model.Email</p>
+                
+                <div class="d-flex justify-content-center gap-2">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <span class="badge bg-danger">Administrator</span>
+                    }
+                    else if (User.IsInRole("Agent"))
+                    {
+                        <span class="badge bg-primary">Agent HelpDesk</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Użytkownik</span>
+                    }
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="text-start">
+                    <p class="mb-2">
+                        <i class="bi bi-building me-2 text-muted"></i>
+                        <strong>Dział:</strong> @(Model.Department ?? "Nie podano")
+                    </p>
+                    <p class="mb-2">
+                        <i class="bi bi-telephone me-2 text-muted"></i>
+                        <strong>Telefon:</strong> @(Model.PhoneExtension ?? Model.PhoneNumber ?? "Nie podano")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        @if (ViewBag.HasLocalPassword == true)
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <i class="bi bi-shield-lock me-2"></i>
+                    Bezpieczeństwo
+                </div>
+                <div class="card-body">
+                    <a asp-action="ChangePassword" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-key me-2"></i>
+                        Zmień hasło
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <i class="bi bi-microsoft me-2"></i>
+                    Logowanie
+                </div>
+                <div class="card-body text-center">
+                    <i class="bi bi-shield-check text-success mb-2" style="font-size:1.5rem"></i>
+                    <p class="small text-muted mb-0">Twoje konto używa<br><strong>Microsoft SSO</strong></p>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil me-2"></i>
+                Edytuj dane
+            </div>
+            <div class="card-body">
+                <form asp-action="Profile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">Imię</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">Nazwisko</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Adres e-mail</label>
+                        <input asp-for="Email" class="form-control" readonly />
+                        <small class="text-muted">Adres e-mail nie może być zmieniony</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Department" class="form-label">Dział</label>
+                            <input asp-for="Department" class="form-control" />
+                            <span asp-validation-for="Department" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Telefon</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="+48 123 456 789" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">Anuluj</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>
+                            Zapisz zmiany
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,339 @@
+@model ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel
+@{
+    ViewData["Title"] = $"Zgłoszenie #{Model.TicketNumber}";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <div class="d-flex align-items-center gap-3 mb-2">
+            <h1 class="page-title mb-0">#@Model.TicketNumber</h1>
+            <span class="badge badge-status-@Model.Status.ToString().ToLower() fs-6">@Model.StatusDisplay</span>
+            <span class="badge badge-priority-@Model.Priority.ToString().ToLower() fs-6">@Model.PriorityDisplay</span>
+        </div>
+        <p class="page-subtitle mb-0">@Model.Title</p>
+    </div>
+    <div class="page-actions">
+        @if (User.IsInRole("Agent") || User.IsInRole("Admin") || Model.RequesterId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                <i class="bi bi-pencil me-2"></i>
+                Edytuj
+            </a>
+        }
+        <a asp-action="MyTickets" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>
+            Wróć
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <!-- Ticket Description -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-card-text me-2"></i>
+                Opis zgłoszenia
+            </div>
+            <div class="card-body">
+                <div style="white-space: pre-wrap;">@Model.Description</div>
+            </div>
+        </div>
+        
+        <!-- Attachments -->
+        @if (Model.Attachments != null && Model.Attachments.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-paperclip me-2"></i>
+                    Załączniki (@Model.Attachments.Count())
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        @foreach (var attachment in Model.Attachments)
+                        {
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center p-3 bg-light rounded">
+                                    @if (attachment.ContentType?.StartsWith("image/") == true)
+                                    {
+                                        <i class="bi bi-file-image text-primary me-3" style="font-size: 24px;"></i>
+                                    }
+                                    else if (attachment.ContentType == "application/pdf")
+                                    {
+                                        <i class="bi bi-file-pdf text-danger me-3" style="font-size: 24px;"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-file-earmark text-secondary me-3" style="font-size: 24px;"></i>
+                                    }
+                                    <div class="flex-grow-1 min-width-0">
+                                        <a href="@attachment.FilePath" target="_blank" class="text-truncate d-block">
+                                            @attachment.FileName
+                                        </a>
+                                        <small class="text-muted">@attachment.FileSize</small>
+                                    </div>
+                                    <a href="@attachment.FilePath" download class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        
+        <!-- Comments -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>
+                    <i class="bi bi-chat-dots me-2"></i>
+                    Komentarze (@(Model.Comments?.Count() ?? 0))
+                </span>
+            </div>
+            <div class="card-body">
+                @if (Model.Comments != null && Model.Comments.Any())
+                {
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <div class="comment @(comment.IsInternal ? "internal" : "")">
+                            <div class="comment-header">
+                                <div class="comment-avatar">
+                                    @comment.AuthorName?.Substring(0, 1).ToUpper()
+                                </div>
+                                <div>
+                                    <span class="comment-author">@comment.AuthorName</span>
+                                    @if (comment.IsInternal)
+                                    {
+                                        <span class="badge bg-warning ms-2">Wewnętrzny</span>
+                                    }
+                                </div>
+                                <span class="comment-time ms-auto">@comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                            </div>
+                            <div class="comment-content">
+                                @comment.Content
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted text-center mb-0">Brak komentarzy</p>
+                }
+            </div>
+            
+            <!-- Add Comment Form -->
+            <div class="card-footer">
+                <form asp-action="AddComment" method="post">
+                    <input type="hidden" name="ticketId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <textarea name="content" class="form-control" rows="3" 
+                                  placeholder="Napisz komentarz..." required></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" name="isInternal" value="true" class="form-check-input" id="isInternal">
+                                <label class="form-check-label" for="isInternal">
+                                    Komentarz wewnętrzny (widoczny tylko dla agentów)
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div></div>
+                        }
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>
+                            Wyślij
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- History -->
+        @if (Model.History != null && Model.History.Any())
+        {
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Historia zmian
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        @foreach (var entry in Model.History)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <i class="bi bi-circle-fill"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong>@entry.FieldName</strong>
+                                            @if (!string.IsNullOrEmpty(entry.OldValue) && !string.IsNullOrEmpty(entry.NewValue))
+                                            {
+                                                <span class="text-muted">zmieniono z</span>
+                                                <span class="badge bg-secondary">@entry.OldValue</span>
+                                                <span class="text-muted">na</span>
+                                                <span class="badge bg-primary">@entry.NewValue</span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(entry.NewValue))
+                                            {
+                                                <span class="text-muted">ustawiono na</span>
+                                                <span class="badge bg-primary">@entry.NewValue</span>
+                                            }
+                                        </div>
+                                        <small class="timeline-time">@entry.ChangedAt.ToString("dd.MM HH:mm")</small>
+                                    </div>
+                                    <small class="text-muted">przez @entry.ChangedByName</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Ticket Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>
+                Informacje
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <tr>
+                        <td class="text-muted">Kategoria</td>
+                        <td class="text-end"><strong>@Model.CategoryName</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Zgłaszający</td>
+                        <td class="text-end">@Model.RequesterName</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Przypisany do</td>
+                        <td class="text-end">
+                            @if (!string.IsNullOrEmpty(Model.AssignedToName))
+                            {
+                                @Model.AssignedToName
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">Nieprzypisane</span>
+                            }
+                        </td>
+                    </tr>
+                    @if (Model.DueDate.HasValue)
+                    {
+                        <tr>
+                            <td class="text-muted">SLA / Termin</td>
+                            <td class="text-end">
+                                @if (Model.IsOverdue)
+                                {
+                                    <span class="text-danger fw-semibold">
+                                        <i class="bi bi-exclamation-circle me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                    <div><small class="text-danger">Przeterminowane</small></div>
+                                }
+                                else if (Model.TimeToDeadline.HasValue && Model.TimeToDeadline.Value.TotalHours < 24)
+                                {
+                                    <span class="text-warning fw-semibold">
+                                        <i class="bi bi-clock me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
+                                    </span>
+                                    <div><small class="text-warning">Mniej niż 24h</small></div>
+                                }
+                                else
+                                {
+                                    <span>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td class="text-muted">Utworzono</td>
+                        <td class="text-end">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                    @if (Model.UpdatedAt != Model.CreatedAt)
+                    {
+                        <tr>
+                            <td class="text-muted">Aktualizacja</td>
+                            <td class="text-end">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    }
+                    @if (Model.ResolvedAt.HasValue)
+                    {
+                        <tr>
+                            <td class="text-muted">Rozwiązano</td>
+                            <td class="text-end">@Model.ResolvedAt.Value.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        @if (User.IsInRole("Agent") || User.IsInRole("Admin"))
+        {
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">Akcje agenta</p>
+                    <div class="d-flex flex-column gap-2">
+                        @if (string.IsNullOrEmpty(Model.AssignedToName))
+                        {
+                            <form asp-action="Take" method="post">
+                                <input type="hidden" name="ticketId" value="@Model.Id" />
+                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
+                                        style="background:#eff6ff;color:#2563eb">
+                                    <i class="bi bi-person-plus me-2"></i>Przejmij zgłoszenie
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.InProgress &&
+                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Closed &&
+                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
+                        {
+                            <form asp-action="ChangeStatus" method="post">
+                                <input type="hidden" name="ticketId" value="@Model.Id" />
+                                <input type="hidden" name="newStatus" value="InProgress" />
+                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
+                                        style="background:#f0f9ff;color:#0284c7">
+                                    <i class="bi bi-play-circle me-2"></i>Rozpocznij pracę
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved &&
+                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Closed)
+                        {
+                            <form asp-action="ChangeStatus" method="post">
+                                <input type="hidden" name="ticketId" value="@Model.Id" />
+                                <input type="hidden" name="newStatus" value="Resolved" />
+                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
+                                        style="background:#f0fdf4;color:#16a34a">
+                                    <i class="bi bi-check-circle me-2"></i>Oznacz jako rozwiązane
+                                </button>
+                            </form>
+                        }
+                        @if (Model.Status == ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
+                        {
+                            <form asp-action="ChangeStatus" method="post">
+                                <input type="hidden" name="ticketId" value="@Model.Id" />
+                                <input type="hidden" name="newStatus" value="Closed" />
+                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
+                                        style="background:#f8fafc;color:#64748b">
+                                    <i class="bi bi-archive me-2"></i>Zamknij zgłoszenie
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

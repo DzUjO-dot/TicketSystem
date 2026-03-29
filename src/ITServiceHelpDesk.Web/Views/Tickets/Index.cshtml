@@ -1,0 +1,195 @@
+@model ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel
+@{
+    ViewData["Title"] = "Wszystkie zgłoszenia";
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Wszystkie zgłoszenia</h1>
+        <p class="page-subtitle">Przeglądaj i zarządzaj wszystkimi zgłoszeniami w systemie</p>
+    </div>
+    <div class="page-actions">
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nowe zgłoszenie
+        </a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Index" method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Szukaj</label>
+                <input type="text" name="SearchTerm" value="@Model.Filter?.SearchTerm" class="form-control" placeholder="Tytuł, numer, treść...">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Status</label>
+                <select name="Status" class="form-select">
+                    <option value="">Wszystkie</option>
+                    <option value="New" selected="@(Model.Filter?.Status?.ToString() == "New")">Nowe</option>
+                    <option value="Open" selected="@(Model.Filter?.Status?.ToString() == "Open")">Otwarte</option>
+                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W realizacji</option>
+                    <option value="WaitingForUser" selected="@(Model.Filter?.Status?.ToString() == "WaitingForUser")">Oczekuje na użytkownika</option>
+                    <option value="Resolved" selected="@(Model.Filter?.Status?.ToString() == "Resolved")">Rozwiązane</option>
+                    <option value="Closed" selected="@(Model.Filter?.Status?.ToString() == "Closed")">Zamknięte</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Priorytet</label>
+                <select name="Priority" class="form-select">
+                    <option value="">Wszystkie</option>
+                    <option value="Low" selected="@(Model.Filter?.Priority?.ToString() == "Low")">Niski</option>
+                    <option value="Medium" selected="@(Model.Filter?.Priority?.ToString() == "Medium")">Średni</option>
+                    <option value="High" selected="@(Model.Filter?.Priority?.ToString() == "High")">Wysoki</option>
+                    <option value="Critical" selected="@(Model.Filter?.Priority?.ToString() == "Critical")">Krytyczny</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Kategoria</label>
+                <select name="CategoryId" class="form-select">
+                    <option value="">Wszystkie</option>
+                    @if (Model.Categories != null)
+                    {
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.Id" selected="@(Model.Filter?.CategoryId == cat.Id)">@cat.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Filtruj
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i> Wyczyść
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tickets Table -->
+<div class="card">
+    <div class="card-body p-0">
+        @if (Model.Tickets != null && Model.Tickets.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Nr</th>
+                            <th>Tytuł</th>
+                            <th>Zgłaszający</th>
+                            <th>Kategoria</th>
+                            <th>Przypisany</th>
+                            <th>Status</th>
+                            <th>Priorytet</th>
+                            <th>Data utworzenia</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model.Tickets)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@ticket.Id">
+                                        <strong>#@ticket.TicketNumber</strong>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@ticket.Id" class="text-dark">
+                                        @ticket.Title
+                                    </a>
+                                </td>
+                                <td>@ticket.RequesterName</td>
+                                <td>@ticket.CategoryName</td>
+                                <td>@(ticket.AssignedToName ?? "<span class='text-muted'>-</span>")</td>
+                                <td>
+                                    <span class="badge badge-status-@ticket.Status.ToString().ToLower()">
+                                        @ticket.StatusDisplay
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">
+                                        @ticket.PriorityDisplay
+                                    </span>
+                                </td>
+                                <td>@ticket.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Details" asp-route-id="@ticket.Id">
+                                                    <i class="bi bi-eye me-2"></i>Szczegóły
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@ticket.Id">
+                                                    <i class="bi bi-pencil me-2"></i>Edytuj
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            @if (Model.Tickets.TotalPages > 1)
+            {
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <span class="text-muted">
+                        Pokazano @Model.Tickets.Count z @Model.Tickets.TotalCount zgłoszeń
+                    </span>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            @if (Model.Tickets.HasPreviousPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Tickets.PageIndex - 1)">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            }
+                            @for (int i = 1; i <= Model.Tickets.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Tickets.PageIndex ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@i">@i</a>
+                                </li>
+                            }
+                            @if (Model.Tickets.HasNextPage)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" asp-action="Index" asp-route-page="@(Model.Tickets.PageIndex + 1)">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 64px;"></i>
+                <h5 class="mt-3">Brak zgłoszeń</h5>
+                <p class="text-muted">Nie znaleziono zgłoszeń spełniających kryteria wyszukiwania.</p>
+                <a asp-action="Create" class="btn btn-primary mt-2">
+                    <i class="bi bi-plus-lg me-2"></i>Utwórz pierwsze zgłoszenie
+                </a>
+            </div>
+        }
+    </div>
+</div>

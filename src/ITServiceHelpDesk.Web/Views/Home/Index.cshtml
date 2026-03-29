@@ -1,0 +1,77 @@
+@{
+    ViewData["Title"] = "Strona główna";
+    Layout = "_Layout";
+}
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- Zalogowany użytkownik - przekierowanie do Dashboard -->
+    <script>window.location.href = '@Url.Action("Index", "Dashboard")';</script>
+}
+else
+{
+    <!-- Landing Page dla niezalogowanych -->
+    <div class="auth-card" style="max-width: 600px;">
+        <div class="auth-logo">
+            <i class="bi bi-headset"></i>
+            <h1>IT Service HelpDesk</h1>
+            <p>Profesjonalny system obsługi zgłoszeń IT</p>
+        </div>
+        
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="d-flex align-items-center p-3 bg-light rounded">
+                    <i class="bi bi-ticket-perforated text-primary me-3" style="font-size: 24px;"></i>
+                    <div>
+                        <strong>Zgłoszenia</strong>
+                        <p class="mb-0 small text-muted">Twórz i śledź zgłoszenia</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center p-3 bg-light rounded">
+                    <i class="bi bi-lightning text-warning me-3" style="font-size: 24px;"></i>
+                    <div>
+                        <strong>Szybka pomoc</strong>
+                        <p class="mb-0 small text-muted">Profesjonalne wsparcie IT</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center p-3 bg-light rounded">
+                    <i class="bi bi-graph-up text-success me-3" style="font-size: 24px;"></i>
+                    <div>
+                        <strong>Statystyki</strong>
+                        <p class="mb-0 small text-muted">Pełen podgląd stanu</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center p-3 bg-light rounded">
+                    <i class="bi bi-shield-check text-info me-3" style="font-size: 24px;"></i>
+                    <div>
+                        <strong>Bezpieczeństwo</strong>
+                        <p class="mb-0 small text-muted">Pełna kontrola dostępu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Zaloguj się
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-primary">
+                <i class="bi bi-person-plus me-2"></i>
+                Zarejestruj się
+            </a>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <small class="text-white-50">
+            IT Service HelpDesk &copy; @DateTime.Now.Year | Projekt studencki
+        </small>
+    </div>
+}

@@ -1,0 +1,194 @@
+@using ITServiceHelpDesk.Models.Entities
+@using ITServiceHelpDesk.Models.ViewModels.Shared
+@using ITServiceHelpDesk.Models.Enums
+@{
+    ViewData["Title"] = "Dashboard";
+    var stats = ViewBag.Stats as ITServiceHelpDesk.Services.Interfaces.UserTicketStatsViewModel;
+    var recentTickets = ViewBag.RecentTickets as PaginatedList<Ticket>;
+    var userName = (ViewBag.UserName as string ?? User.Identity?.Name ?? "Użytkownik").Split(' ')[0];
+}
+
+<!-- Header -->
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title mb-1">Cześć, @userName! 👋</h1>
+        <p class="text-muted mb-0">@DateTime.Now.ToString("dddd, d MMMM yyyy", new System.Globalization.CultureInfo("pl-PL"))</p>
+    </div>
+    <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>Nowe zgłoszenie
+    </a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#f5f3ff">
+                    <i class="bi bi-ticket-perforated" style="font-size:1.5rem;color:#7c3aed"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.TotalTickets ?? 0)</div>
+                    <div class="text-muted small">Wszystkie</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fef3c7">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;color:#d97706"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@((stats?.NewTickets ?? 0) + (stats?.OpenTickets ?? 0))</div>
+                    <div class="text-muted small">Otwarte</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#dbeafe">
+                    <i class="bi bi-play-circle" style="font-size:1.5rem;color:#2563eb"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
+                    <div class="text-muted small">W realizacji</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#d1fae5">
+                    <i class="bi bi-check-circle" style="font-size:1.5rem;color:#059669"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@((stats?.ResolvedTickets ?? 0) + (stats?.ClosedTickets ?? 0))</div>
+                    <div class="text-muted small">Rozwiązane</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Tickets -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-clock-history me-2 text-primary"></i>Ostatnie zgłoszenia</h6>
+                <a asp-controller="Tickets" asp-action="MyTickets" class="btn btn-sm btn-outline-primary">
+                    Zobacz wszystkie <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (recentTickets != null && recentTickets.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ticket in recentTickets)
+                        {
+                            <a href="@Url.Action("Details", "Tickets", new { id = ticket.Id })"
+                               class="list-group-item list-group-item-action px-4 py-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1 me-3">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <code class="text-primary small fw-bold">@ticket.TicketNumber</code>
+                                            @{
+                                                var statusClass = ticket.Status switch {
+                                                    TicketStatus.New => "bg-purple",
+                                                    TicketStatus.Open => "bg-primary",
+                                                    TicketStatus.InProgress => "bg-warning text-dark",
+                                                    TicketStatus.WaitingForUser => "bg-info",
+                                                    TicketStatus.Resolved => "bg-success",
+                                                    TicketStatus.Closed => "bg-secondary",
+                                                    _ => "bg-danger"
+                                                };
+                                                var statusName = ticket.Status switch {
+                                                    TicketStatus.New => "Nowy",
+                                                    TicketStatus.Open => "Otwarty",
+                                                    TicketStatus.InProgress => "W trakcie",
+                                                    TicketStatus.WaitingForUser => "Oczekuje",
+                                                    TicketStatus.Resolved => "Rozwiązany",
+                                                    TicketStatus.Closed => "Zamknięty",
+                                                    _ => "Odrzucony"
+                                                };
+                                            }
+                                            <span class="badge @statusClass" style="font-size:10px">@statusName</span>
+                                        </div>
+                                        <div class="fw-medium text-truncate" style="max-width:380px">@ticket.Title</div>
+                                        <div class="text-muted small mt-1">@ticket.CreatedAt.ToString("dd.MM.yyyy HH:mm")</div>
+                                    </div>
+                                    @{
+                                        var prioClass = ticket.Priority switch {
+                                            TicketPriority.Critical => "text-danger",
+                                            TicketPriority.High => "text-warning",
+                                            TicketPriority.Medium => "text-info",
+                                            _ => "text-success"
+                                        };
+                                        var prioIcon = ticket.Priority switch {
+                                            TicketPriority.Critical => "bi-arrow-up-circle-fill",
+                                            TicketPriority.High => "bi-arrow-up-circle",
+                                            TicketPriority.Medium => "bi-dash-circle",
+                                            _ => "bi-arrow-down-circle"
+                                        };
+                                    }
+                                    <i class="bi @prioIcon @prioClass fs-5" title="@ticket.Priority"></i>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted d-block mb-3" style="font-size:3rem"></i>
+                        <h6 class="text-muted">Brak zgłoszeń</h6>
+                        <p class="text-muted small">Utwórz swoje pierwsze zgłoszenie IT</p>
+                        <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-lg me-1"></i>Nowe zgłoszenie
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-4">
+        <!-- Status Summary -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-bottom">
+                <h6 class="mb-0 fw-semibold"><i class="bi bi-bar-chart me-2 text-info"></i>Status zgłoszeń</h6>
+            </div>
+            <div class="card-body py-2">
+                @{
+                    var total = stats?.TotalTickets ?? 0;
+                    void StatusRow(string name, int count, string color)
+                    {
+                        var pct = total > 0 ? (int)((double)count / total * 100) : 0;
+                        <div class="d-flex align-items-center gap-2 py-2">
+                            <div class="rounded-circle" style="width:8px;height:8px;background:@color;flex-shrink:0"></div>
+                            <span class="flex-grow-1 small">@name</span>
+                            <span class="fw-bold small">@count</span>
+                        </div>
+                        @if (total > 0 && count > 0)
+                        {
+                            <div class="progress mb-1" style="height:4px">
+                                <div class="progress-bar" style="width:@(pct)%;background:@color"></div>
+                            </div>
+                        }
+                    }
+                }
+                @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#7c3aed"); }
+                @{ StatusRow("Otwarte", stats?.OpenTickets ?? 0, "#3b82f6"); }
+                @{ StatusRow("W trakcie", stats?.InProgressTickets ?? 0, "#f59e0b"); }
+                @{ StatusRow("Rozwiązane", stats?.ResolvedTickets ?? 0, "#10b981"); }
+                @{ StatusRow("Zamknięte", stats?.ClosedTickets ?? 0, "#6b7280"); }
+            </div>
+        </div>
+    </div>
+</div>

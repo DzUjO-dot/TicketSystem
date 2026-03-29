@@ -1,0 +1,67 @@
+@model List<ITServiceHelpDesk.Models.Entities.Notification>
+@using ITServiceHelpDesk.Models.Enums
+
+@{
+    string GetIcon(NotificationType type) => type switch
+    {
+        NotificationType.TicketCreated => "ticket-perforated text-primary",
+        NotificationType.TicketAssigned => "person-check text-info",
+        NotificationType.TicketStatusChanged => "arrow-repeat text-warning",
+        NotificationType.TicketCommented => "chat-dots text-secondary",
+        NotificationType.TicketResolved => "check-circle text-success",
+        NotificationType.TicketClosed => "x-circle text-secondary",
+        _ => "bell text-muted"
+    };
+
+    string TimeAgo(DateTime dt)
+    {
+        var span = DateTime.UtcNow - dt;
+        if (span.TotalMinutes < 1) return "przed chwilą";
+        if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} min temu";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} godz. temu";
+        return $"{(int)span.TotalDays} dni temu";
+    }
+}
+
+<li class="dropdown-header d-flex justify-content-between align-items-center">
+    <span>Powiadomienia</span>
+    @if (Model.Any())
+    {
+        <form asp-controller="Account" asp-action="MarkAllNotificationsRead" method="post" class="d-inline">
+            <button type="submit" class="btn btn-link btn-sm p-0 text-muted" style="font-size:11px">
+                Oznacz wszystkie
+            </button>
+        </form>
+    }
+</li>
+<li><hr class="dropdown-divider"></li>
+
+@if (Model.Any())
+{
+    @foreach (var n in Model)
+    {
+        <li>
+            <a href="@(n.RelatedTicketId.HasValue ? Url.Action("Details", "Tickets", new { id = n.RelatedTicketId }) + "?markRead=" + n.Id : "#")"
+               class="dropdown-item notification-item py-2">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-@GetIcon(n.Type) mt-1" style="font-size:1rem; flex-shrink:0"></i>
+                    <div class="flex-grow-1 min-width-0">
+                        <div class="notification-title text-truncate" style="font-size:12px; font-weight:500">@n.Title</div>
+                        <div class="text-muted" style="font-size:11px; white-space:normal">@n.Message</div>
+                        <div class="text-muted mt-1" style="font-size:10px">@TimeAgo(n.CreatedAt)</div>
+                    </div>
+                </div>
+            </a>
+        </li>
+    }
+    <li><hr class="dropdown-divider"></li>
+}
+else
+{
+    <li>
+        <span class="dropdown-item text-center text-muted py-3" style="font-size:12px">
+            <i class="bi bi-bell-slash d-block mb-1" style="font-size:1.5rem"></i>
+            Brak nowych powiadomień
+        </span>
+    </li>
+}

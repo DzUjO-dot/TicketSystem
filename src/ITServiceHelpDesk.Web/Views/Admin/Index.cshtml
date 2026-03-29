@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "Panel Administratora";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Panel Administratora</h1>
+    <p class="page-subtitle">Zarządzaj systemem HelpDesk</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-people text-primary" style="font-size: 48px;"></i>
+                </div>
+                <h5 class="card-title">Użytkownicy</h5>
+                <p class="card-text text-muted">Zarządzaj kontami użytkowników, rolami i uprawnieniami.</p>
+                <a asp-action="Users" class="btn btn-primary">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Przejdź
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-tags text-success" style="font-size: 48px;"></i>
+                </div>
+                <h5 class="card-title">Kategorie</h5>
+                <p class="card-text text-muted">Dodawaj, edytuj i usuwaj kategorie zgłoszeń.</p>
+                <a asp-action="Categories" class="btn btn-success">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Przejdź
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-journal-text text-info" style="font-size: 48px;"></i>
+                </div>
+                <h5 class="card-title">Log aktywności</h5>
+                <p class="card-text text-muted">Przeglądaj historię wszystkich działań w systemie.</p>
+                <a asp-action="AuditLog" class="btn btn-info">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Przejdź
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-ticket-perforated text-warning" style="font-size: 48px;"></i>
+                </div>
+                <h5 class="card-title">Wszystkie zgłoszenia</h5>
+                <p class="card-text text-muted">Przeglądaj i zarządzaj wszystkimi zgłoszeniami.</p>
+                <a asp-controller="Tickets" asp-action="Index" class="btn btn-warning">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Przejdź
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-speedometer2 text-secondary" style="font-size: 48px;"></i>
+                </div>
+                <h5 class="card-title">Dashboard</h5>
+                <p class="card-text text-muted">Wróć do głównego panelu z podsumowaniem.</p>
+                <a asp-controller="Dashboard" asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    Przejdź
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,316 @@
+2026-03-15 21:17:29.219 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:17:29.289 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:29.289 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:29.380 +01:00 [FTL] An error occurred while initializing the database
+System.InvalidOperationException: An error was generated for warning 'Microsoft.EntityFrameworkCore.Migrations.PendingModelChangesWarning': The model for context 'ApplicationDbContext' has pending changes. Add a new migration before updating the database. This exception can be suppressed or logged by passing event ID 'RelationalEventId.PendingModelChangesWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+   at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition`1.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, TParam arg)
+   at Microsoft.EntityFrameworkCore.Diagnostics.RelationalLoggerExtensions.PendingModelChangesWarning(IDiagnosticsLogger`1 diagnostics, Type contextType)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+   at Program.<Main>$(String[] args) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Program.cs:line 133
+2026-03-15 21:17:31.666 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:17:31.738 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:31.738 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:31.828 +01:00 [FTL] An error occurred while initializing the database
+System.InvalidOperationException: An error was generated for warning 'Microsoft.EntityFrameworkCore.Migrations.PendingModelChangesWarning': The model for context 'ApplicationDbContext' has pending changes. Add a new migration before updating the database. This exception can be suppressed or logged by passing event ID 'RelationalEventId.PendingModelChangesWarning' to the 'ConfigureWarnings' method in 'DbContext.OnConfiguring' or 'AddDbContext'.
+   at Microsoft.EntityFrameworkCore.Diagnostics.EventDefinition`1.Log[TLoggerCategory](IDiagnosticsLogger`1 logger, TParam arg)
+   at Microsoft.EntityFrameworkCore.Diagnostics.RelationalLoggerExtensions.PendingModelChangesWarning(IDiagnosticsLogger`1 diagnostics, Type contextType)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)
+   at Program.<Main>$(String[] args) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Program.cs:line 133
+2026-03-15 21:17:37.971 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:17:38.038 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:38.038 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:44.593 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:17:44.666 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:44.666 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:50.736 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:17:50.807 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:50.807 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:17:51.947 +01:00 [INF] Database initialized and seeded successfully
+2026-03-15 21:17:52.037 +01:00 [INF] IT Service HelpDesk Application starting...
+2026-03-15 21:17:52.037 +01:00 [INF] Environment: Production
+2026-03-15 21:19:07.061 +01:00 [WRN] No instantiatable types implementing `IEntityTypeConfiguration` were found while while scanning assembly 'ITServiceHelpDesk.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'.
+2026-03-15 21:19:07.131 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketAttachment'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:19:07.132 +01:00 [WRN] Entity 'Ticket' has a global query filter defined and is the required end of a relationship with the entity 'TicketHistory'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2026-03-15 21:19:07.620 +01:00 [INF] Database initialized and seeded successfully
+2026-03-15 21:19:07.676 +01:00 [INF] IT Service HelpDesk Application starting...
+2026-03-15 21:19:07.677 +01:00 [INF] Environment: Production
+2026-03-15 21:19:40.386 +01:00 [WRN] Failed to determine the https port for redirect.
+2026-03-15 21:19:40.449 +01:00 [INF] HTTP GET / responded 200 in 43.6952 ms
+2026-03-15 21:19:40.776 +01:00 [INF] HTTP GET /favicon.ico responded 404 in 0.0616 ms
+2026-03-15 21:19:45.554 +01:00 [INF] HTTP GET /Account/Login responded 200 in 55.0501 ms
+2026-03-15 21:20:02.412 +01:00 [INF] HTTP POST /Account/Login responded 200 in 31.2640 ms
+2026-03-15 21:20:14.531 +01:00 [INF] HTTP POST /Account/Login responded 200 in 32.0489 ms
+2026-03-15 21:20:32.053 +01:00 [INF] HTTP POST /Account/Login responded 200 in 2.7689 ms
+2026-03-15 21:20:39.494 +01:00 [INF] HTTP GET /Account/Register responded 200 in 25.8308 ms
+2026-03-15 21:20:56.334 +01:00 [INF] User test@gmail.com created a new account.
+2026-03-15 21:20:56.398 +01:00 [INF] HTTP POST /Account/Register responded 302 in 207.9098 ms
+2026-03-15 21:20:56.420 +01:00 [INF] HTTP GET /Dashboard responded 302 in 14.5506 ms
+2026-03-15 21:20:56.533 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 85.2959 ms
+2026-03-15 21:21:09.348 +01:00 [ERR] HTTP GET /Tickets/MyTickets responded 500 in 28.9700 ms
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketFilterViewModel', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method1069(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-03-15 21:21:09.355 +01:00 [ERR] Unhandled exception occurred. TraceId: 0HNK2Q0O0B0RF:0000000C, Path: /Tickets/MyTickets, Method: GET
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketFilterViewModel', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method1069(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at ITServiceHelpDesk.Infrastructure.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Infrastructure\Middleware\ExceptionHandlingMiddleware.cs:line 22
+2026-03-15 21:21:09.372 +01:00 [INF] HTTP GET /Home/Error responded 200 in 8.2293 ms
+2026-03-15 21:21:12.435 +01:00 [ERR] HTTP GET /Tickets/MyTickets responded 500 in 3.5293 ms
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketFilterViewModel', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method1069(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-03-15 21:21:12.439 +01:00 [ERR] Unhandled exception occurred. TraceId: 0HNK2Q0O0B0RF:0000000F, Path: /Tickets/MyTickets, Method: GET
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketFilterViewModel', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method1069(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at ITServiceHelpDesk.Infrastructure.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Infrastructure\Middleware\ExceptionHandlingMiddleware.cs:line 22
+2026-03-15 21:21:12.447 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.9010 ms
+2026-03-15 21:21:13.372 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.9446 ms
+2026-03-15 21:21:13.870 +01:00 [INF] HTTP GET / responded 302 in 0.1812 ms
+2026-03-15 21:21:13.877 +01:00 [INF] HTTP GET /Dashboard responded 302 in 2.3041 ms
+2026-03-15 21:21:13.886 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 3.9641 ms
+2026-03-15 21:21:14.769 +01:00 [INF] HTTP GET /Tickets/Create responded 200 in 20.8416 ms
+2026-03-15 21:21:37.139 +01:00 [INF] File saved: IMAGE 2026-01-16 11_44_02.jpeg -> uploads/tickets/8/12fee0174f4c451ea83394c7c4153757.jpeg
+2026-03-15 21:21:37.194 +01:00 [INF] [EMAIL MOCK] Wysyłka wyłączona. Email: To=test@gmail.com, Subject=[HelpDesk] Zgłoszenie HD-2026-0008 - Utworzone
+2026-03-15 21:21:37.205 +01:00 [INF] User d9281da5-38af-4f86-8a01-902a6c16d852 created ticket HD-2026-0008
+2026-03-15 21:21:37.207 +01:00 [INF] HTTP POST /Tickets/Create responded 302 in 134.2128 ms
+2026-03-15 21:21:37.249 +01:00 [WRN] Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+2026-03-15 21:21:37.320 +01:00 [ERR] HTTP GET /Tickets/Details/8 responded 500 in 108.4908 ms
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.Entities.Ticket', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method2178(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-03-15 21:21:37.325 +01:00 [ERR] Unhandled exception occurred. TraceId: 0HNK2Q0O0B0RF:00000017, Path: /Tickets/Details/8, Method: GET
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.Entities.Ticket', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method2178(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at ITServiceHelpDesk.Infrastructure.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Infrastructure\Middleware\ExceptionHandlingMiddleware.cs:line 22
+2026-03-15 21:21:37.333 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.8062 ms
+2026-03-15 21:21:40.880 +01:00 [INF] HTTP GET / responded 302 in 0.2655 ms
+2026-03-15 21:21:40.886 +01:00 [INF] HTTP GET /Dashboard responded 302 in 2.3291 ms
+2026-03-15 21:21:40.903 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 12.7131 ms
+2026-03-15 21:21:42.241 +01:00 [INF] HTTP GET /Account/Profile responded 200 in 13.9034 ms
+2026-03-15 21:21:44.163 +01:00 [INF] HTTP GET /Dashboard responded 302 in 2.1605 ms
+2026-03-15 21:21:44.171 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.1654 ms
+2026-03-15 21:21:46.534 +01:00 [ERR] HTTP GET /Tickets/Details/8 responded 500 in 3.7882 ms
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.Entities.Ticket', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method2178(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2026-03-15 21:21:46.539 +01:00 [ERR] Unhandled exception occurred. TraceId: 0HNK2Q0O0B0RF:0000001F, Path: /Tickets/Details/8, Method: GET
+System.InvalidOperationException: The model item passed into the ViewDataDictionary is of type 'ITServiceHelpDesk.Models.Entities.Ticket', but this ViewDataDictionary instance requires a model item of type 'ITServiceHelpDesk.Models.ViewModels.Tickets.TicketDetailsViewModel'.
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary.EnsureCompatible(Object value)
+   at lambda_method2178(Closure, ViewDataDictionary)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorPagePropertyActivator.Activate(Object page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageCoreAsync(IRazorPage page, ViewContext context)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderPageAsync(IRazorPage page, ViewContext context, Boolean invokeViewStarts)
+   at Microsoft.AspNetCore.Mvc.Razor.RazorView.RenderAsync(ViewContext context)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ViewContext viewContext, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor.ExecuteAsync(ActionContext actionContext, IView view, ViewDataDictionary viewData, ITempDataDictionary tempData, String contentType, Nullable`1 statusCode)
+   at Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor.ExecuteAsync(ActionContext context, ViewResult result)
+   at Microsoft.AspNetCore.Mvc.ViewResult.ExecuteResultAsync(ActionContext context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResultFilterAsync>g__Awaited|30_0[TFilter,TFilterAsync](ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResultExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.ResultNext[TFilter,TFilterAsync](State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.InvokeResultFilters()
+--- End of stack trace from previous location ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeNextResourceFilter>g__Awaited|25_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Rethrow(ResourceExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Session.SessionMiddleware.Invoke(HttpContext context)
+   at ITServiceHelpDesk.Infrastructure.Middleware.ExceptionHandlingMiddleware.InvokeAsync(HttpContext context) in C:\Users\Adrian\Desktop\ITservice\src\ITServiceHelpDesk.Web\Infrastructure\Middleware\ExceptionHandlingMiddleware.cs:line 22
+2026-03-15 21:21:46.546 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.7194 ms
+2026-03-15 21:21:48.309 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.6909 ms
+2026-03-15 21:21:49.631 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.8405 ms
+2026-03-15 21:21:52.989 +01:00 [INF] HTTP GET /Account/ChangePassword responded 200 in 8.4777 ms
+2026-03-15 21:21:54.427 +01:00 [INF] HTTP GET /Account/Profile responded 200 in 3.8118 ms
+2026-03-15 21:21:57.148 +01:00 [INF] HTTP GET /Account/Profile responded 200 in 4.0263 ms
+2026-03-15 21:21:57.795 +01:00 [INF] HTTP GET /Account/Profile responded 200 in 3.3807 ms
+2026-03-15 21:21:58.118 +01:00 [INF] HTTP GET /Account/Profile responded 200 in 2.8471 ms
+2026-03-15 21:22:00.508 +01:00 [INF] HTTP GET /Tickets/Create responded 200 in 3.2540 ms
+2026-03-15 21:22:00.665 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.5082 ms
+2026-03-15 21:22:00.824 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.8573 ms
+2026-03-15 21:22:00.989 +01:00 [INF] HTTP GET /Home/Error responded 200 in 0.7708 ms
+2026-03-15 21:22:01.174 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.5726 ms
+2026-03-15 21:22:01.357 +01:00 [INF] HTTP GET /Account/Register responded 302 in 0.1576 ms
+2026-03-15 21:22:01.367 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 5.0335 ms
+2026-03-15 21:22:03.758 +01:00 [INF] HTTP POST /Account/Login responded 400 in 1.3732 ms
+2026-03-15 21:22:05.789 +01:00 [INF] HTTP GET /Account/Login responded 302 in 0.2130 ms
+2026-03-15 21:22:05.798 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.7207 ms
+2026-03-15 21:22:06.407 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.2481 ms
+2026-03-15 21:22:19.416 +01:00 [INF] HTTP GET / responded 302 in 0.1338 ms
+2026-03-15 21:22:19.422 +01:00 [INF] HTTP GET /Dashboard responded 302 in 2.1626 ms
+2026-03-15 21:22:19.431 +01:00 [INF] HTTP GET /Dashboard/User responded 200 in 4.1621 ms
+2026-03-15 21:22:21.564 +01:00 [INF] HTTP GET /Tickets/Create responded 200 in 3.5759 ms
+2026-03-15 21:22:22.241 +01:00 [INF] HTTP GET /Tickets/Create responded 200 in 2.9001 ms
+2026-03-15 21:22:25.460 +01:00 [INF] HTTP GET /Account/Login responded 200 in 1.6184 ms
+2026-03-15 21:22:42.956 +01:00 [INF] HTTP POST /Account/Login responded 200 in 2.6464 ms
+2026-03-15 21:22:53.324 +01:00 [INF] HTTP POST /Account/Login responded 200 in 2.5504 ms
+2026-03-15 21:23:06.318 +01:00 [INF] HTTP POST /Account/Login responded 200 in 2.5746 ms
+2026-03-15 21:23:11.381 +01:00 [INF] HTTP POST /Account/Login responded 200 in 3.4063 ms

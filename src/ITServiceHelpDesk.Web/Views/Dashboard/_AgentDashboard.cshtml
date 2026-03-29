@@ -1,0 +1,175 @@
+@model dynamic
+@{
+    var stats = Model.Stats as dynamic;
+    var assignedTickets = Model.AssignedTickets as IEnumerable<dynamic>;
+    var unassignedTickets = Model.UnassignedTickets as IEnumerable<dynamic>;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Panel Agenta</h1>
+        <p class="page-subtitle">Zarządzaj przypisanymi zgłoszeniami</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Tickets" asp-action="Unassigned" class="btn btn-outline-primary me-2">
+            <i class="bi bi-inbox me-2"></i>
+            Nieprzypisane (@(stats?.UnassignedCount ?? 0))
+        </a>
+        <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nowe zgłoszenie
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-person-check"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.AssignedToMe ?? 0)</div>
+                <div class="stat-label">Przypisane do mnie</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.UnassignedCount ?? 0)</div>
+                <div class="stat-label">Nieprzypisane</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.CriticalTickets ?? 0)</div>
+                <div class="stat-label">Krytyczne</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.ResolvedToday ?? 0)</div>
+                <div class="stat-label">Rozwiązane dziś</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Assigned Tickets -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-person-check me-2"></i>
+                Moje zgłoszenia
+                <a asp-controller="Tickets" asp-action="AssignedToMe" class="btn btn-sm btn-outline-primary ms-auto">
+                    Zobacz wszystkie
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (assignedTickets != null && assignedTickets.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ticket in assignedTickets.Take(5))
+                        {
+                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="text-muted small">#@ticket.TicketNumber</span>
+                                        <h6 class="mb-1">@ticket.Title</h6>
+                                        <small class="text-muted">@ticket.RequesterName</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">
+                                            @ticket.Priority
+                                        </span>
+                                        <br>
+                                        <small class="text-muted">@ticket.CreatedAt.ToString("dd.MM HH:mm")</small>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle text-success" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3 mb-0">Brak przypisanych zgłoszeń</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <!-- Unassigned Tickets -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-inbox me-2"></i>
+                Nieprzypisane zgłoszenia
+                <a asp-controller="Tickets" asp-action="Unassigned" class="btn btn-sm btn-outline-primary ms-auto">
+                    Zobacz wszystkie
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (unassignedTickets != null && unassignedTickets.Any())
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var ticket in unassignedTickets.Take(5))
+                        {
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="text-muted small">#@ticket.TicketNumber</span>
+                                        <h6 class="mb-1">
+                                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">
+                                                @ticket.Title
+                                            </a>
+                                        </h6>
+                                        <small class="text-muted">@ticket.RequesterName • @ticket.CategoryName</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge badge-priority-@ticket.Priority.ToString().ToLower() mb-1">
+                                            @ticket.Priority
+                                        </span>
+                                        <br>
+                                        <form asp-controller="Tickets" asp-action="Assign" method="post" class="d-inline">
+                                            <input type="hidden" name="ticketId" value="@ticket.Id" />
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-person-plus"></i> Przejmij
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3 mb-0">Brak nieprzypisanych zgłoszeń</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

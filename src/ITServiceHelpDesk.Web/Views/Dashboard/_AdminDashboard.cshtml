@@ -1,0 +1,234 @@
+@model dynamic
+@{
+    var stats = Model.Stats as dynamic;
+    var recentTickets = Model.RecentTickets as IEnumerable<dynamic>;
+    var recentActivity = Model.RecentActivity as IEnumerable<dynamic>;
+}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="page-title">Panel Administratora</h1>
+        <p class="page-subtitle">Pełen przegląd systemu HelpDesk</p>
+    </div>
+    <div class="page-actions">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-primary me-2">
+            <i class="bi bi-gear me-2"></i>
+            Ustawienia
+        </a>
+        <a asp-controller="Tickets" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-2"></i>
+            Nowe zgłoszenie
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon primary">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.TotalTickets ?? 0)</div>
+                <div class="stat-label">Wszystkie zgłoszenia</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.OpenTickets ?? 0)</div>
+                <div class="stat-label">Otwarte</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.UnassignedCount ?? 0)</div>
+                <div class="stat-label">Nieprzypisane</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.TotalUsers ?? 0)</div>
+                <div class="stat-label">Użytkownicy</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Row Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon info">
+                <i class="bi bi-arrow-repeat"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.InProgressTickets ?? 0)</div>
+                <div class="stat-label">W realizacji</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon danger">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.CriticalTickets ?? 0)</div>
+                <div class="stat-label">Krytyczne priorytety</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@(stats?.ResolvedThisMonth ?? 0)</div>
+                <div class="stat-label">Rozwiązane w tym miesiącu</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Tickets -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clock-history me-2"></i>
+                Najnowsze zgłoszenia
+                <a asp-controller="Tickets" asp-action="Index" class="btn btn-sm btn-outline-primary ms-auto">
+                    Zobacz wszystkie
+                </a>
+            </div>
+            <div class="card-body p-0">
+                @if (recentTickets != null && recentTickets.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Nr</th>
+                                    <th>Tytuł</th>
+                                    <th>Zgłaszający</th>
+                                    <th>Przypisany</th>
+                                    <th>Status</th>
+                                    <th>Priorytet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ticket in recentTickets)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id">
+                                                #@ticket.TicketNumber
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Tickets" asp-action="Details" asp-route-id="@ticket.Id" class="text-dark">
+                                                @ticket.Title
+                                            </a>
+                                        </td>
+                                        <td>@ticket.RequesterName</td>
+                                        <td>@(ticket.AssignedToName ?? "-")</td>
+                                        <td>
+                                            <span class="badge badge-status-@ticket.Status.ToString().ToLower()">
+                                                @ticket.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">
+                                                @ticket.Priority
+                                            </span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox text-muted" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3 mb-0">Brak zgłoszeń w systemie</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-lightning me-2"></i>
+                Szybkie akcje
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Tickets" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-list-ul me-2"></i>
+                        Wszystkie zgłoszenia
+                    </a>
+                    <a asp-controller="Tickets" asp-action="Unassigned" class="btn btn-outline-warning">
+                        <i class="bi bi-inbox me-2"></i>
+                        Nieprzypisane zgłoszenia
+                    </a>
+                    <a asp-controller="Admin" asp-action="Users" class="btn btn-outline-secondary">
+                        <i class="bi bi-people me-2"></i>
+                        Zarządzaj użytkownikami
+                    </a>
+                    <a asp-controller="Admin" asp-action="Categories" class="btn btn-outline-secondary">
+                        <i class="bi bi-tags me-2"></i>
+                        Zarządzaj kategoriami
+                    </a>
+                    <a asp-controller="Admin" asp-action="AuditLog" class="btn btn-outline-info">
+                        <i class="bi bi-journal-text me-2"></i>
+                        Log aktywności
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-server me-2"></i>
+                Status systemu
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Baza danych</span>
+                    <span class="badge bg-success">Online</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>E-mail</span>
+                    <span class="badge bg-warning">Wyłączony</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Wersja</span>
+                    <span class="badge bg-secondary">1.0.0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
