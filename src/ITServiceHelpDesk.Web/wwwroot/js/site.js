@@ -116,6 +116,19 @@
     });
 
     // ============================================
+    // Dropdowns inside table-responsive
+    // Popper domyślnie klipuje dropdown do kontenera z overflow:auto.
+    // Strategia 'fixed' pozycjonuje względem viewportu i omija to ograniczenie.
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.table-responsive [data-bs-toggle="dropdown"]').forEach(function(el) {
+            new bootstrap.Dropdown(el, {
+                popperConfig: { strategy: 'fixed' }
+            });
+        });
+    });
+
+    // ============================================
     // Search Input Enhancement
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
