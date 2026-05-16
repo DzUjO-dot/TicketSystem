@@ -122,12 +122,9 @@ public class TicketDetailsViewModel
     public string StatusBadgeClass => Status switch
     {
         TicketStatus.New => "bg-purple",
-        TicketStatus.Open => "bg-primary",
         TicketStatus.InProgress => "bg-warning text-dark",
         TicketStatus.WaitingForUser => "bg-info",
         TicketStatus.Resolved => "bg-success",
-        TicketStatus.Closed => "bg-secondary",
-        TicketStatus.Rejected => "bg-danger",
         _ => "bg-secondary"
     };
 
@@ -143,12 +140,9 @@ public class TicketDetailsViewModel
     public string StatusDisplayName => Status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.Open => "Otwarty",
         TicketStatus.InProgress => "W trakcie",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
-        TicketStatus.Closed => "Zamknięty",
-        TicketStatus.Rejected => "Odrzucony",
         _ => Status.ToString()
     };
 

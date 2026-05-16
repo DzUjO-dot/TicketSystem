@@ -322,6 +322,7 @@ public class AccountController : Controller
             LastName = user.LastName,
             Department = user.Department,
             PhoneExtension = user.PhoneExtension,
+            PhoneNumber = user.PhoneNumber,
             Role = roles.FirstOrDefault() ?? "User",
             CreatedAt = user.CreatedAt,
             LastLoginAt = user.LastLoginAt
@@ -353,6 +354,7 @@ public class AccountController : Controller
         user.LastName = model.LastName;
         user.Department = model.Department;
         user.PhoneExtension = model.PhoneExtension;
+        user.PhoneNumber = model.PhoneNumber;
 
         var result = await _userManager.UpdateAsync(user);
 

@@ -75,12 +75,9 @@ public class TicketEditViewModel
     public string StatusDisplay => Status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.Open => "Otwarty",
         TicketStatus.InProgress => "W trakcie",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
-        TicketStatus.Closed => "Zamknięty",
-        TicketStatus.Rejected => "Odrzucony",
         _ => Status.ToString()
     };
 }

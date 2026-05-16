@@ -39,8 +39,9 @@ public class TicketsController : Controller
     public async Task<IActionResult> Index(TicketFilterViewModel filter)
     {
         var tickets = await _ticketService.GetTicketsAsync(filter, filter.PageIndex, filter.PageSize);
+        var categories = (await _categoryService.GetActiveCategoriesAsync()).ToList();
 
-        filter.Categories = new SelectList(await _categoryService.GetActiveCategoriesAsync(), "Id", "Name", filter.CategoryId);
+        filter.Categories = new SelectList(categories, "Id", "Name", filter.CategoryId);
         filter.Statuses = GetStatusSelectList(filter.Status);
         filter.Priorities = GetPrioritySelectList(filter.Priority);
 
@@ -48,6 +49,7 @@ public class TicketsController : Controller
         {
             Tickets = ToPagedViewModels(tickets),
             Filter = filter,
+            Categories = categories,
             ViewTitle = "Wszystkie zgłoszenia",
             ViewDescription = "Lista wszystkich zgłoszeń w systemie",
             ShowCreatedBy = true,
@@ -68,6 +70,7 @@ public class TicketsController : Controller
         if (userId == null) return RedirectToAction("Login", "Account");
 
         var tickets = await _ticketService.GetUserTicketsAsync(userId, filter, filter.PageIndex, filter.PageSize);
+        ViewBag.Stats = await _ticketService.GetUserStatsAsync(userId);
 
         filter.Categories = new SelectList(await _categoryService.GetActiveCategoriesAsync(), "Id", "Name", filter.CategoryId);
         filter.Statuses = GetStatusSelectList(filter.Status);
@@ -478,8 +481,39 @@ public class TicketsController : Controller
     }
 
     // ============================================
-    // DOWNLOAD ATTACHMENT
+    // VIEW / DOWNLOAD ATTACHMENT
     // ============================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteAttachment(int id, int ticketId)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return RedirectToAction("Login", "Account");
+
+        var result = await _ticketService.DeleteAttachmentAsync(id, userId);
+        TempData[result ? "SuccessMessage" : "ErrorMessage"] =
+            result ? "Załącznik został usunięty." : "Nie udało się usunąć załącznika.";
+
+        return RedirectToAction(nameof(Details), new { id = ticketId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewAttachment(int id)
+    {
+        var attachment = await _ticketService.GetAttachmentAsync(id);
+        if (attachment == null)
+            return NotFound();
+
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", attachment.FilePath);
+        if (!System.IO.File.Exists(filePath))
+            return NotFound("Plik nie został znaleziony na serwerze.");
+
+        var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+        var encodedName = Uri.EscapeDataString(attachment.OriginalFileName);
+        Response.Headers["Content-Disposition"] = $"inline; filename*=UTF-8''{encodedName}";
+        return File(fileBytes, attachment.ContentType);
+    }
 
     [HttpGet]
     public async Task<IActionResult> DownloadAttachment(int id)
@@ -546,12 +580,9 @@ public class TicketsController : Controller
     private static string GetStatusDisplayName(TicketStatus status) => status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.Open => "Otwarty",
         TicketStatus.InProgress => "W trakcie",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
-        TicketStatus.Closed => "Zamknięty",
-        TicketStatus.Rejected => "Odrzucony",
         _ => status.ToString()
     };
 

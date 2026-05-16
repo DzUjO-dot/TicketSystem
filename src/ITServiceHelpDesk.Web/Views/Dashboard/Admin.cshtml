@@ -43,8 +43,8 @@
                     <i class="bi bi-hourglass-split" style="font-size:1.5rem;color:#d97706"></i>
                 </div>
                 <div>
-                    <div class="fw-bold fs-3 lh-1">@((stats?.NewTickets ?? 0) + (stats?.OpenTickets ?? 0))</div>
-                    <div class="text-muted small">Otwarte</div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
+                    <div class="text-muted small">W trakcie</div>
                 </div>
             </div>
         </div>
@@ -159,11 +159,10 @@
                         }
                     }
                 }
-                @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#7c3aed"); }
-                @{ StatusRow("Otwarte", stats?.OpenTickets ?? 0, "#3b82f6"); }
+                @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#3b82f6"); }
                 @{ StatusRow("W trakcie", stats?.InProgressTickets ?? 0, "#f59e0b"); }
+                @{ StatusRow("Oczekujące", stats?.WaitingForUserTickets ?? 0, "#ca8a04"); }
                 @{ StatusRow("Rozwiązane", stats?.ResolvedTickets ?? 0, "#10b981"); }
-                @{ StatusRow("Zamknięte", stats?.ClosedTickets ?? 0, "#6b7280"); }
             </div>
         </div>
     </div>

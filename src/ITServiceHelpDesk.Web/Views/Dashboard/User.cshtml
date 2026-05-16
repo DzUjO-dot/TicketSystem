@@ -41,8 +41,8 @@
                     <i class="bi bi-hourglass-split" style="font-size:1.5rem;color:#d97706"></i>
                 </div>
                 <div>
-                    <div class="fw-bold fs-3 lh-1">@((stats?.NewTickets ?? 0) + (stats?.OpenTickets ?? 0))</div>
-                    <div class="text-muted small">Otwarte</div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
+                    <div class="text-muted small">W trakcie</div>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
                     <i class="bi bi-check-circle" style="font-size:1.5rem;color:#059669"></i>
                 </div>
                 <div>
-                    <div class="fw-bold fs-3 lh-1">@((stats?.ResolvedTickets ?? 0) + (stats?.ClosedTickets ?? 0))</div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.ResolvedTickets ?? 0)</div>
                     <div class="text-muted small">Rozwiązane</div>
                 </div>
             </div>
@@ -100,21 +100,17 @@
                                             @{
                                                 var statusClass = ticket.Status switch {
                                                     TicketStatus.New => "bg-purple",
-                                                    TicketStatus.Open => "bg-primary",
                                                     TicketStatus.InProgress => "bg-warning text-dark",
                                                     TicketStatus.WaitingForUser => "bg-info",
                                                     TicketStatus.Resolved => "bg-success",
-                                                    TicketStatus.Closed => "bg-secondary",
-                                                    _ => "bg-danger"
+                                                    _ => "bg-secondary"
                                                 };
                                                 var statusName = ticket.Status switch {
                                                     TicketStatus.New => "Nowy",
-                                                    TicketStatus.Open => "Otwarty",
                                                     TicketStatus.InProgress => "W trakcie",
                                                     TicketStatus.WaitingForUser => "Oczekuje",
                                                     TicketStatus.Resolved => "Rozwiązany",
-                                                    TicketStatus.Closed => "Zamknięty",
-                                                    _ => "Odrzucony"
+                                                    _ => ticket.Status.ToString()
                                                 };
                                             }
                                             <span class="badge @statusClass" style="font-size:10px">@statusName</span>
@@ -183,11 +179,10 @@
                         }
                     }
                 }
-                @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#7c3aed"); }
-                @{ StatusRow("Otwarte", stats?.OpenTickets ?? 0, "#3b82f6"); }
+                @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#3b82f6"); }
                 @{ StatusRow("W trakcie", stats?.InProgressTickets ?? 0, "#f59e0b"); }
+                @{ StatusRow("Oczekujące", stats?.WaitingForUserTickets ?? 0, "#ca8a04"); }
                 @{ StatusRow("Rozwiązane", stats?.ResolvedTickets ?? 0, "#10b981"); }
-                @{ StatusRow("Zamknięte", stats?.ClosedTickets ?? 0, "#6b7280"); }
             </div>
         </div>
     </div>

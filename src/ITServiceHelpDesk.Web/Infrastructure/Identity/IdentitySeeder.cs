@@ -213,13 +213,13 @@ public static class IdentitySeeder
                 UpdatedAt = DateTime.UtcNow.AddHours(-2),
                 DueDate = DateTime.UtcNow.AddDays(1)
             },
-            // Ticket 2 - Open, assigned
+            // Ticket 2 - InProgress, assigned
             new Ticket
             {
                 TicketNumber = $"HD-{currentYear}-{ticketCounter++:D4}",
                 Title = "Proszę o instalację programu Adobe Acrobat",
                 Description = "Potrzebuję programu Adobe Acrobat Pro do edycji dokumentów PDF. Czy mogę prosić o instalację?",
-                Status = TicketStatus.Open,
+                Status = TicketStatus.InProgress,
                 Priority = TicketPriority.Medium,
                 CategoryId = software.Id,
                 CreatedByUserId = user2.Id,
@@ -274,21 +274,20 @@ public static class IdentitySeeder
                 ResolvedAt = DateTime.UtcNow.AddDays(-2),
                 ResolutionSummary = "Konto utworzone. Login: m.nowicki, hasło tymczasowe przekazane mailowo do przełożonego."
             },
-            // Ticket 6 - Closed
+            // Ticket 6 - Resolved
             new Ticket
             {
                 TicketNumber = $"HD-{currentYear}-{ticketCounter++:D4}",
                 Title = "Wymiana klawiatury",
                 Description = "Klawiatura ma zepsute kilka klawiszy (Enter, Spacja, kilka liter). Proszę o wymianę na nową.",
-                Status = TicketStatus.Closed,
+                Status = TicketStatus.Resolved,
                 Priority = TicketPriority.Low,
                 CategoryId = hardware.Id,
                 CreatedByUserId = user3.Id,
                 AssignedToUserId = agent2?.Id,
                 CreatedAt = DateTime.UtcNow.AddDays(-7),
                 UpdatedAt = DateTime.UtcNow.AddDays(-4),
-                ResolvedAt = DateTime.UtcNow.AddDays(-5),
-                ClosedAt = DateTime.UtcNow.AddDays(-4),
+                ResolvedAt = DateTime.UtcNow.AddDays(-4),
                 ResolutionSummary = "Klawiatura wymieniona na nową. Stara oddana do utylizacji."
             },
             // Ticket 7 - Critical, New
@@ -330,8 +329,8 @@ public static class IdentitySeeder
                 UserId = agent1.Id,
                 Action = "Zmiana statusu",
                 OldValue = "Nowy",
-                NewValue = "Otwarty",
-                Description = "Status zmieniony z Nowy na Otwarty",
+                NewValue = "W trakcie",
+                Description = "Status zmieniony z Nowy na W trakcie",
                 CreatedAt = DateTime.UtcNow.AddHours(-4)
             }
         };
