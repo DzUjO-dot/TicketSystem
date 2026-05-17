@@ -164,6 +164,13 @@ public class AdminController : Controller
     public async Task<IActionResult> Categories()
     {
         var categories = await _categoryService.GetAllCategoriesAsync();
+
+        var ticketCounts = await _context.Tickets
+            .GroupBy(t => t.CategoryId)
+            .Select(g => new { CategoryId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.CategoryId, x => x.Count);
+
+        ViewBag.TicketCounts = ticketCounts;
         return View(categories);
     }
 

@@ -46,15 +46,15 @@
         </div>
 
         <!-- Attachments -->
-        @if (Model.Attachments != null && Model.Attachments.Any())
-        {
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="bi bi-paperclip me-2"></i>
-                    Załączniki (@Model.Attachments.Count())
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-paperclip me-2"></i>
+                Załączniki (@(Model.Attachments?.Count() ?? 0))
+            </div>
+            <div class="card-body">
+                @if (Model.Attachments != null && Model.Attachments.Any())
+                {
+                    <div class="row g-3 mb-3">
                         @foreach (var attachment in Model.Attachments)
                         {
                             <div class="col-md-6">
@@ -72,21 +72,53 @@
                                         <i class="bi bi-file-earmark text-secondary me-3" style="font-size: 24px;"></i>
                                     }
                                     <div class="flex-grow-1 min-width-0">
-                                        <a href="@attachment.FilePath" target="_blank" class="text-truncate d-block">
+                                        <a asp-action="ViewAttachment" asp-route-id="@attachment.Id" target="_blank" class="text-truncate d-block">
                                             @attachment.FileName
                                         </a>
                                         <small class="text-muted">@attachment.FileSize</small>
                                     </div>
-                                    <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id" class="btn btn-sm btn-outline-primary ms-2">
+                                    <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id" class="btn btn-sm btn-outline-primary ms-2" title="Pobierz">
                                         <i class="bi bi-download"></i>
                                     </a>
+                                    @if (isOwner || isAgentOrAdmin)
+                                    {
+                                        <form asp-action="DeleteAttachment" asp-controller="Tickets" method="post" class="ms-1"
+                                              onsubmit="return confirm('Czy na pewno chcesz usunąć ten załącznik?');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@attachment.Id" />
+                                            <input type="hidden" name="ticketId" value="@Model.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
                                 </div>
                             </div>
                         }
                     </div>
-                </div>
+                }
+                else
+                {
+                    <p class="text-muted small mb-3">Brak załączników.</p>
+                }
+
+                @if (isOwner || isAgentOrAdmin)
+                {
+                    <form asp-action="UploadAttachment" asp-controller="Tickets" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ticketId" value="@Model.Id" />
+                        <div class="input-group input-group-sm">
+                            <input type="file" name="file" class="form-control"
+                                   accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" required />
+                            <button type="submit" class="btn btn-outline-secondary">
+                                <i class="bi bi-upload me-1"></i>Dodaj
+                            </button>
+                        </div>
+                        <div class="form-text">Maks. 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
+                    </form>
+                }
             </div>
-        }
+        </div>
 
         <!-- Comments -->
         <div class="card mb-4">

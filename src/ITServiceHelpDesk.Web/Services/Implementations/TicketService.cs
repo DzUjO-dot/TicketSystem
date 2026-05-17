@@ -158,6 +158,34 @@ public class TicketService : ITicketService
             changes.Add("dueDate");
         }
 
+        if (ticket.Status != model.Status)
+        {
+            var oldStatus = ticket.Status;
+            await AddHistoryAsync(ticket.Id, userId, "Zmiana statusu",
+                GetStatusDisplayName(oldStatus), GetStatusDisplayName(model.Status),
+                $"Zmieniono status z '{GetStatusDisplayName(oldStatus)}' na '{GetStatusDisplayName(model.Status)}'");
+            ticket.Status = model.Status;
+            if (model.Status == TicketStatus.Resolved && !ticket.ResolvedAt.HasValue)
+                ticket.ResolvedAt = DateTime.UtcNow;
+            changes.Add("status");
+        }
+
+        var newAgentId = string.IsNullOrEmpty(model.AssignedToUserId) ? null : model.AssignedToUserId;
+        if (ticket.AssignedToUserId != newAgentId)
+        {
+            var oldAgent = ticket.AssignedToUserId != null ? await _userManager.FindByIdAsync(ticket.AssignedToUserId) : null;
+            var newAgent = newAgentId != null ? await _userManager.FindByIdAsync(newAgentId) : null;
+            await AddHistoryAsync(ticket.Id, userId,
+                newAgentId == null ? "Usunięto przypisanie" : "Przypisano",
+                oldAgent?.FullName ?? "Brak",
+                newAgent?.FullName ?? "Brak",
+                newAgentId == null ? "Usunięto przypisanie agenta" : $"Przypisano do agenta: {newAgent?.FullName}");
+            ticket.AssignedToUserId = newAgentId;
+            if (ticket.Status == TicketStatus.New && newAgentId != null)
+                ticket.Status = TicketStatus.InProgress;
+            changes.Add("assignedTo");
+        }
+
         ticket.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
 
@@ -252,17 +280,17 @@ public class TicketService : ITicketService
 
         if (filter != null)
         {
-            // domyślnie ukryj rozwiązane/zamknięte, chyba że agent jawnie filtruje po statusie
+            // domyślnie ukryj rozwiązane, chyba że agent jawnie filtruje po statusie
             if (!filter.Status.HasValue)
             {
-                query = query.Where(t => t.Status != TicketStatus.Resolved && t.Status != TicketStatus.Closed);
+                query = query.Where(t => t.Status != TicketStatus.Resolved);
             }
             query = ApplyFilters(query, filter);
             query = ApplySorting(query, filter.SortBy, filter.SortDescending);
         }
         else
         {
-            query = query.Where(t => t.Status != TicketStatus.Resolved && t.Status != TicketStatus.Closed);
+            query = query.Where(t => t.Status != TicketStatus.Resolved);
             query = query.OrderByDescending(t => t.Priority).ThenByDescending(t => t.CreatedAt);
         }
 
@@ -276,7 +304,7 @@ public class TicketService : ITicketService
             .Include(t => t.CreatedBy)
             .Include(t => t.Comments)
             .Include(t => t.Attachments)
-            .Where(t => t.AssignedToUserId == null && t.Status != TicketStatus.Closed && t.Status != TicketStatus.Rejected)
+            .Where(t => t.AssignedToUserId == null && t.Status != TicketStatus.Resolved)
             .AsQueryable();
 
         if (filter != null)
@@ -309,18 +337,6 @@ public class TicketService : ITicketService
         {
             ticket.ResolvedAt = DateTime.UtcNow;
             ticket.ResolutionSummary = resolutionSummary;
-        }
-        else if (newStatus == TicketStatus.Closed)
-        {
-            ticket.ClosedAt = DateTime.UtcNow;
-            if (!string.IsNullOrWhiteSpace(resolutionSummary))
-            {
-                ticket.ResolutionSummary = resolutionSummary;
-            }
-            if (!ticket.ResolvedAt.HasValue)
-            {
-                ticket.ResolvedAt = DateTime.UtcNow;
-            }
         }
 
         await AddHistoryAsync(ticketId, userId, "Zmiana statusu", 
@@ -361,7 +377,7 @@ public class TicketService : ITicketService
 
         if (ticket.Status == TicketStatus.New && agentId != null)
         {
-            ticket.Status = TicketStatus.Open;
+            ticket.Status = TicketStatus.InProgress;
         }
 
         var action = agentId == null ? "Usunięto przypisanie" : "Przypisano";
@@ -392,18 +408,18 @@ public class TicketService : ITicketService
         if (ticket.Status != TicketStatus.Resolved) return false;
         if (ticket.ResolvedAt.HasValue && (DateTime.UtcNow - ticket.ResolvedAt.Value).TotalDays > 14) return false;
 
-        ticket.Status = TicketStatus.Open;
+        ticket.Status = TicketStatus.New;
         ticket.ResolvedAt = null;
         ticket.ResolutionSummary = null;
         ticket.UpdatedAt = DateTime.UtcNow;
 
         await AddHistoryAsync(ticketId, userId, "Wznowiono",
-            TicketStatus.Resolved.ToString(), TicketStatus.Open.ToString(),
+            TicketStatus.Resolved.ToString(), TicketStatus.New.ToString(),
             "Zgłoszenie wznowione przez zgłaszającego — niezadowolony z rozwiązania");
 
         await _context.SaveChangesAsync();
 
-        await _notificationService.NotifyStatusChangedAsync(ticket, TicketStatus.Resolved, TicketStatus.Open);
+        await _notificationService.NotifyStatusChangedAsync(ticket, TicketStatus.Resolved, TicketStatus.New);
 
         return true;
     }
@@ -581,10 +597,9 @@ public class TicketService : ITicketService
         {
             TotalTickets = tickets.Count,
             NewTickets = tickets.Count(t => t.Status == TicketStatus.New),
-            OpenTickets = tickets.Count(t => t.Status == TicketStatus.Open),
             InProgressTickets = tickets.Count(t => t.Status == TicketStatus.InProgress),
-            ResolvedTickets = tickets.Count(t => t.Status == TicketStatus.Resolved),
-            ClosedTickets = tickets.Count(t => t.Status == TicketStatus.Closed)
+            WaitingForUserTickets = tickets.Count(t => t.Status == TicketStatus.WaitingForUser),
+            ResolvedTickets = tickets.Count(t => t.Status == TicketStatus.Resolved)
         };
     }
 
@@ -595,8 +610,8 @@ public class TicketService : ITicketService
 
         return new AgentTicketStatsViewModel
         {
-            AssignedToMe = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status != TicketStatus.Closed),
-            UnassignedTickets = allTickets.Count(t => t.AssignedToUserId == null && t.Status != TicketStatus.Closed && t.Status != TicketStatus.Rejected),
+            AssignedToMe = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status != TicketStatus.Resolved),
+            UnassignedTickets = allTickets.Count(t => t.AssignedToUserId == null && t.Status != TicketStatus.Resolved),
             NewTickets = allTickets.Count(t => t.Status == TicketStatus.New),
             InProgressTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.InProgress),
             WaitingForUserTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.WaitingForUser),
@@ -616,10 +631,9 @@ public class TicketService : ITicketService
         {
             TotalTickets = allTickets.Count,
             NewTickets = allTickets.Count(t => t.Status == TicketStatus.New),
-            OpenTickets = allTickets.Count(t => t.Status == TicketStatus.Open),
             InProgressTickets = allTickets.Count(t => t.Status == TicketStatus.InProgress),
+            WaitingForUserTickets = allTickets.Count(t => t.Status == TicketStatus.WaitingForUser),
             ResolvedTickets = allTickets.Count(t => t.Status == TicketStatus.Resolved),
-            ClosedTickets = allTickets.Count(t => t.Status == TicketStatus.Closed),
             OverdueTickets = allTickets.Count(t => t.IsOverdue),
             TotalUsers = users.Count,
             TotalAgents = agents.Count,
@@ -743,10 +757,8 @@ public class TicketService : ITicketService
 
         if (filter.ShowOverdueOnly == true)
         {
-            query = query.Where(t => t.DueDate < DateTime.UtcNow && 
-                t.Status != TicketStatus.Closed && 
-                t.Status != TicketStatus.Resolved &&
-                t.Status != TicketStatus.Rejected);
+            query = query.Where(t => t.DueDate < DateTime.UtcNow &&
+                t.Status != TicketStatus.Resolved);
         }
 
         return query;
@@ -772,12 +784,9 @@ public class TicketService : ITicketService
         return status switch
         {
             TicketStatus.New => "Nowy",
-            TicketStatus.Open => "Otwarty",
             TicketStatus.InProgress => "W trakcie",
             TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
             TicketStatus.Resolved => "Rozwiązany",
-            TicketStatus.Closed => "Zamknięty",
-            TicketStatus.Rejected => "Odrzucony",
             _ => status.ToString()
         };
     }

@@ -181,10 +181,9 @@ public class UserTicketStatsViewModel
 {
     public int TotalTickets { get; set; }
     public int NewTickets { get; set; }
-    public int OpenTickets { get; set; }
     public int InProgressTickets { get; set; }
+    public int WaitingForUserTickets { get; set; }
     public int ResolvedTickets { get; set; }
-    public int ClosedTickets { get; set; }
 }
 
 public class AgentTicketStatsViewModel
@@ -202,10 +201,9 @@ public class AdminTicketStatsViewModel
 {
     public int TotalTickets { get; set; }
     public int NewTickets { get; set; }
-    public int OpenTickets { get; set; }
     public int InProgressTickets { get; set; }
+    public int WaitingForUserTickets { get; set; }
     public int ResolvedTickets { get; set; }
-    public int ClosedTickets { get; set; }
     public int OverdueTickets { get; set; }
     public int TotalUsers { get; set; }
     public int TotalAgents { get; set; }

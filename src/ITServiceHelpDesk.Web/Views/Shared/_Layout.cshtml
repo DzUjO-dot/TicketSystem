@@ -12,7 +12,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body class="@(User.Identity?.IsAuthenticated == true ? "has-sidebar" : "")">
     @if (User.Identity?.IsAuthenticated == true)
@@ -46,7 +46,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Tickets" asp-action="Create">
+                        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Create" && ViewContext.RouteData.Values["controller"]?.ToString() == "Tickets" ? "active" : "")" asp-controller="Tickets" asp-action="Create">
                             <i class="bi bi-plus-circle"></i>
                             <span>Nowe zgłoszenie</span>
                         </a>

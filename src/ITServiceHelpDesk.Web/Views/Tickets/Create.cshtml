@@ -53,10 +53,12 @@
                     </div>
                     
                     <div class="mb-4">
-                        <label asp-for="Attachments" class="form-label">Załączniki (opcjonalnie)</label>
-                        <input asp-for="Attachments" class="form-control" type="file" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" />
-                        <small class="text-muted">Maksymalnie 5 plików, każdy do 10 MB. Dozwolone: obrazy, PDF, dokumenty Office, ZIP.</small>
-                        <span asp-validation-for="Attachments" class="text-danger small"></span>
+                        <label class="form-label">Załączniki (opcjonalnie)</label>
+                        <div id="file-list" class="d-flex flex-column gap-2 mb-2"></div>
+                        <button type="button" id="add-file-btn" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-plus me-1"></i>Dodaj plik
+                        </button>
+                        <div class="form-text">Maksymalnie 5 plików, każdy do 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
                     </div>
                     
                     <div class="d-flex justify-content-end gap-2">
@@ -121,4 +123,34 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        const MAX_FILES = 5;
+        const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip';
+        const fileList = document.getElementById('file-list');
+        const addBtn = document.getElementById('add-file-btn');
+
+        function addFileRow() {
+            const row = document.createElement('div');
+            row.className = 'd-flex gap-2 align-items-center';
+            row.innerHTML = `
+                <input type="file" name="Attachments" class="form-control form-control-sm" accept="${ACCEPT}" />
+                <button type="button" class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="removeRow(this)">
+                    <i class="bi bi-x-lg"></i>
+                </button>`;
+            fileList.appendChild(row);
+            updateAddBtn();
+        }
+
+        function removeRow(btn) {
+            btn.closest('div').remove();
+            updateAddBtn();
+        }
+
+        function updateAddBtn() {
+            addBtn.disabled = fileList.children.length >= MAX_FILES;
+        }
+
+        addBtn.addEventListener('click', addFileRow);
+        addFileRow();
+    </script>
 }

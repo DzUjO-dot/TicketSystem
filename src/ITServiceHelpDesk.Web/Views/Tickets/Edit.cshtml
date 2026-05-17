@@ -55,22 +55,19 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Status" class="form-label">Status</label>
                                 <select asp-for="Status" class="form-select">
-                                    <option value="New">Nowe</option>
-                                    <option value="Open">Otwarte</option>
-                                    <option value="InProgress">W realizacji</option>
+                                    <option value="New">Nowy</option>
+                                    <option value="InProgress">W trakcie</option>
                                     <option value="WaitingForUser">Oczekuje na użytkownika</option>
-                                    <option value="Resolved">Rozwiązane</option>
-                                    <option value="Closed">Zamknięte</option>
-                                    <option value="Rejected">Odrzucone</option>
+                                    <option value="Resolved">Rozwiązany</option>
                                 </select>
                                 <span asp-validation-for="Status" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label asp-for="AssignedToId" class="form-label">Przypisane do</label>
-                                <select asp-for="AssignedToId" asp-items="Model.Agents" class="form-select">
+                                <label asp-for="AssignedToUserId" class="form-label">Przypisane do</label>
+                                <select asp-for="AssignedToUserId" asp-items="Model.Agents" class="form-select">
                                     <option value="">-- Nieprzypisane --</option>
                                 </select>
-                                <span asp-validation-for="AssignedToId" class="text-danger small"></span>
+                                <span asp-validation-for="AssignedToUserId" class="text-danger small"></span>
                             </div>
                         </div>
                     }

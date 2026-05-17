@@ -29,11 +29,9 @@
                 <select name="Status" class="form-select">
                     <option value="">Wszystkie</option>
                     <option value="New" selected="@(Model.Filter?.Status?.ToString() == "New")">Nowe</option>
-                    <option value="Open" selected="@(Model.Filter?.Status?.ToString() == "Open")">Otwarte</option>
-                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W realizacji</option>
+                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W trakcie</option>
                     <option value="WaitingForUser" selected="@(Model.Filter?.Status?.ToString() == "WaitingForUser")">Oczekuje na użytkownika</option>
                     <option value="Resolved" selected="@(Model.Filter?.Status?.ToString() == "Resolved")">Rozwiązane</option>
-                    <option value="Closed" selected="@(Model.Filter?.Status?.ToString() == "Closed")">Zamknięte</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -109,12 +107,12 @@
                                 <td>@ticket.CategoryName</td>
                                 <td>@(ticket.AssignedToName ?? "<span class='text-muted'>-</span>")</td>
                                 <td>
-                                    <span class="badge badge-status-@ticket.Status.ToString().ToLower()">
+                                    <span class="badge @ticket.StatusBadgeClass">
                                         @ticket.StatusDisplay
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-priority-@ticket.Priority.ToString().ToLower()">
+                                    <span class="badge @ticket.PriorityBadgeClass">
                                         @ticket.PriorityDisplay
                                     </span>
                                 </td>

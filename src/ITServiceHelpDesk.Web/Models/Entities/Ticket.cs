@@ -76,18 +76,15 @@ public class Ticket
     /// Czy zgłoszenie jest przeterminowane
     /// </summary>
     [NotMapped]
-    public bool IsOverdue => DueDate.HasValue && 
-                             DueDate.Value < DateTime.UtcNow && 
-                             Status != TicketStatus.Closed && 
-                             Status != TicketStatus.Resolved &&
-                             Status != TicketStatus.Rejected;
+    public bool IsOverdue => DueDate.HasValue &&
+                             DueDate.Value < DateTime.UtcNow &&
+                             Status != TicketStatus.Resolved;
 
     /// <summary>
     /// Czy zgłoszenie jest otwarte (możliwe do edycji)
     /// </summary>
     [NotMapped]
-    public bool IsOpen => Status != TicketStatus.Closed && 
-                          Status != TicketStatus.Rejected;
+    public bool IsOpen => Status != TicketStatus.Resolved;
 
     /// <summary>
     /// Czas od utworzenia zgłoszenia

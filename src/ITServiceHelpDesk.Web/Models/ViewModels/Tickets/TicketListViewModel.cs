@@ -102,25 +102,19 @@ public class TicketListItemViewModel
     private static string GetStatusDisplayName(Models.Enums.TicketStatus status) => status switch
     {
         Models.Enums.TicketStatus.New => "Nowy",
-        Models.Enums.TicketStatus.Open => "Otwarty",
         Models.Enums.TicketStatus.InProgress => "W trakcie",
         Models.Enums.TicketStatus.WaitingForUser => "Oczekuje",
         Models.Enums.TicketStatus.Resolved => "Rozwiązany",
-        Models.Enums.TicketStatus.Closed => "Zamknięty",
-        Models.Enums.TicketStatus.Rejected => "Odrzucony",
         _ => status.ToString()
     };
 
     private static string GetStatusBadgeClass(Models.Enums.TicketStatus status) => status switch
     {
         Models.Enums.TicketStatus.New => "badge-status-new",
-        Models.Enums.TicketStatus.Open => "badge-status-open",
         Models.Enums.TicketStatus.InProgress => "badge-status-inprogress",
         Models.Enums.TicketStatus.WaitingForUser => "badge-status-waitingforuser",
         Models.Enums.TicketStatus.Resolved => "badge-status-resolved",
-        Models.Enums.TicketStatus.Closed => "badge-status-closed",
-        Models.Enums.TicketStatus.Rejected => "badge-status-rejected",
-        _ => "badge-status-closed"
+        _ => "badge-status-new"
     };
 
     private static string GetPriorityDisplayName(Models.Enums.TicketPriority priority) => priority switch

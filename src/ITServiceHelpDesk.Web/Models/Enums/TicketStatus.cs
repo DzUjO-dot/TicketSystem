@@ -10,9 +10,6 @@ public enum TicketStatus
     [Display(Name = "Nowy")]
     New = 0,
 
-    [Display(Name = "Otwarty")]
-    Open = 1,
-
     [Display(Name = "W trakcie")]
     InProgress = 2,
 
@@ -21,10 +18,4 @@ public enum TicketStatus
 
     [Display(Name = "Rozwiązany")]
     Resolved = 4,
-
-    [Display(Name = "Zamknięty")]
-    Closed = 5,
-
-    [Display(Name = "Odrzucony")]
-    Rejected = 6
 }

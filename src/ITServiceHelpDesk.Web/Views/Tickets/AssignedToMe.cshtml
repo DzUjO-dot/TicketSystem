@@ -7,9 +7,9 @@
     <div>
         <h1 class="page-title">Przypisane do mnie</h1>
         <p class="page-subtitle">
-            @if (Model.Filter?.Status?.ToString() == "Resolved" || Model.Filter?.Status?.ToString() == "Closed")
+            @if (Model.Filter?.Status?.ToString() == "Resolved")
             {
-                <span>Archiwum — rozwiązane i zamknięte zgłoszenia</span>
+                <span>Archiwum — rozwiązane zgłoszenia</span>
             }
             else
             {
@@ -32,7 +32,7 @@
 <!-- Quick Filters -->
 <div class="d-flex gap-2 mb-4 flex-wrap">
     @{
-        var isArchive = Model.Filter?.Status?.ToString() == "Resolved" || Model.Filter?.Status?.ToString() == "Closed";
+        var isArchive = Model.Filter?.Status?.ToString() == "Resolved";
         var isActive = !isArchive;
     }
     <a asp-action="AssignedToMe" class="btn @(Model.Filter?.Status == null ? "btn-primary" : "btn-outline-primary")">
