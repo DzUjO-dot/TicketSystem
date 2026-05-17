@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Enums;
+﻿using ITServiceHelpDesk.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,7 +29,7 @@ public class TicketComment
     public CommentType CommentType { get; set; } = CommentType.Public;
 
     [Display(Name = "Data utworzenia")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "Data edycji")]
     public DateTime? UpdatedAt { get; set; }

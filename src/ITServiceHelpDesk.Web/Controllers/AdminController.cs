@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,18 +51,17 @@ public class AdminController : Controller
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            userViewModels.Add(new
-            {
-                user.Id,
-                user.Email,
-                user.FirstName,
-                user.LastName,
-                FullName = $"{user.FirstName} {user.LastName}",
-                user.Department,
-                user.IsActive,
-                user.CreatedAt,
-                Roles = roles
-            });
+            dynamic vm = new System.Dynamic.ExpandoObject();
+            vm.Id = user.Id;
+            vm.Email = user.Email;
+            vm.FirstName = user.FirstName;
+            vm.LastName = user.LastName;
+            vm.FullName = $"{user.FirstName} {user.LastName}";
+            vm.Department = user.Department;
+            vm.IsActive = user.IsActive;
+            vm.CreatedAt = user.CreatedAt;
+            vm.Roles = roles;
+            userViewModels.Add(vm);
         }
 
         ViewBag.Roles = await _roleManager.Roles.ToListAsync();
@@ -141,7 +140,7 @@ public class AdminController : Controller
 
         // Soft delete
         user.IsDeleted = true;
-        user.DeletedAt = DateTime.UtcNow;
+        user.DeletedAt = DateTime.Now;
         user.IsActive = false;
         await _userManager.UpdateAsync(user);
 
@@ -337,18 +336,20 @@ public class AdminController : Controller
             .Where(u => userIds.Contains(u.Id))
             .ToDictionaryAsync(u => u.Id, u => $"{u.FirstName} {u.LastName}");
 
-        var logsWithUsers = logs.Select(l => new
+        var logsWithUsers = logs.Select(l =>
         {
-            l.Id,
-            l.UserId,
-            UserName = l.UserId != null && users.ContainsKey(l.UserId) ? users[l.UserId] : "System",
-            l.Action,
-            l.EntityType,
-            l.EntityId,
-            Details = l.NewValues ?? l.OldValues ?? "",
-            l.IpAddress,
-            Timestamp = l.CreatedAt
-        }).ToList();
+            dynamic vm = new System.Dynamic.ExpandoObject();
+            vm.Id = l.Id;
+            vm.UserId = l.UserId;
+            vm.UserName = l.UserId != null && users.ContainsKey(l.UserId) ? users[l.UserId] : "System";
+            vm.Action = l.Action;
+            vm.EntityType = l.EntityType;
+            vm.EntityId = l.EntityId;
+            vm.Details = l.NewValues ?? l.OldValues ?? "";
+            vm.IpAddress = l.IpAddress;
+            vm.Timestamp = l.CreatedAt;
+            return vm;
+        }).ToList<dynamic>();
 
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = totalPages;

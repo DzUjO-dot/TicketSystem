@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Enums;
+﻿using ITServiceHelpDesk.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -46,10 +46,10 @@ public class Ticket
     public string? AssignedToUserId { get; set; }
 
     [Display(Name = "Data utworzenia")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "Data aktualizacji")]
-    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "Termin realizacji")]
     [DataType(DataType.DateTime)]
@@ -77,7 +77,7 @@ public class Ticket
     /// </summary>
     [NotMapped]
     public bool IsOverdue => DueDate.HasValue &&
-                             DueDate.Value < DateTime.UtcNow &&
+                             DueDate.Value < DateTime.Now &&
                              Status != TicketStatus.Resolved;
 
     /// <summary>
@@ -90,13 +90,13 @@ public class Ticket
     /// Czas od utworzenia zgłoszenia
     /// </summary>
     [NotMapped]
-    public TimeSpan Age => DateTime.UtcNow - CreatedAt;
+    public TimeSpan Age => DateTime.Now - CreatedAt;
 
     /// <summary>
     /// Czas do terminu realizacji (ujemny = po terminie)
     /// </summary>
     [NotMapped]
-    public TimeSpan? TimeToDeadline => DueDate.HasValue ? DueDate.Value - DateTime.UtcNow : null;
+    public TimeSpan? TimeToDeadline => DueDate.HasValue ? DueDate.Value - DateTime.Now : null;
 
     // ============================================
     // NAVIGATION PROPERTIES

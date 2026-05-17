@@ -19,50 +19,52 @@
 <!-- Filters -->
 <div class="card mb-4">
     <div class="card-body">
-        <form asp-action="Index" method="get" class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">Szukaj</label>
-                <input type="text" name="SearchTerm" value="@Model.Filter?.SearchTerm" class="form-control" placeholder="Tytuł, numer, treść...">
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Status</label>
-                <select name="Status" class="form-select">
-                    <option value="">Wszystkie</option>
-                    <option value="New" selected="@(Model.Filter?.Status?.ToString() == "New")">Nowe</option>
-                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W realizacji</option>
-                    <option value="WaitingForUser" selected="@(Model.Filter?.Status?.ToString() == "WaitingForUser")">Oczekuje na użytkownika</option>
-                    <option value="Resolved" selected="@(Model.Filter?.Status?.ToString() == "Resolved")">Rozwiązane</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Priorytet</label>
-                <select name="Priority" class="form-select">
-                    <option value="">Wszystkie</option>
-                    <option value="Low" selected="@(Model.Filter?.Priority?.ToString() == "Low")">Niski</option>
-                    <option value="Medium" selected="@(Model.Filter?.Priority?.ToString() == "Medium")">Średni</option>
-                    <option value="High" selected="@(Model.Filter?.Priority?.ToString() == "High")">Wysoki</option>
-                    <option value="Critical" selected="@(Model.Filter?.Priority?.ToString() == "Critical")">Krytyczny</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Kategoria</label>
-                <select name="CategoryId" class="form-select">
-                    <option value="">Wszystkie</option>
-                    @if (Model.Categories != null)
-                    {
-                        @foreach (var cat in Model.Categories)
+        <form asp-action="Index" method="get">
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label class="form-label">Szukaj</label>
+                    <input type="text" name="SearchTerm" value="@Model.Filter?.SearchTerm" class="form-control" placeholder="Tytuł, numer, treść...">
+                </div>
+                <div class="col-6 col-sm-6 col-lg-2">
+                    <label class="form-label">Status</label>
+                    <select name="Status" class="form-select">
+                        <option value="">Wszystkie</option>
+                        <option value="New" selected="@(Model.Filter?.Status?.ToString() == "New")">Nowe</option>
+                        <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W realizacji</option>
+                        <option value="WaitingForUser" selected="@(Model.Filter?.Status?.ToString() == "WaitingForUser")">Oczekuje</option>
+                        <option value="Resolved" selected="@(Model.Filter?.Status?.ToString() == "Resolved")">Rozwiązane</option>
+                    </select>
+                </div>
+                <div class="col-6 col-sm-6 col-lg-2">
+                    <label class="form-label">Priorytet</label>
+                    <select name="Priority" class="form-select">
+                        <option value="">Wszystkie</option>
+                        <option value="Low" selected="@(Model.Filter?.Priority?.ToString() == "Low")">Niski</option>
+                        <option value="Medium" selected="@(Model.Filter?.Priority?.ToString() == "Medium")">Średni</option>
+                        <option value="High" selected="@(Model.Filter?.Priority?.ToString() == "High")">Wysoki</option>
+                        <option value="Critical" selected="@(Model.Filter?.Priority?.ToString() == "Critical")">Krytyczny</option>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-2">
+                    <label class="form-label">Kategoria</label>
+                    <select name="CategoryId" class="form-select">
+                        <option value="">Wszystkie</option>
+                        @if (Model.Categories != null)
                         {
-                            <option value="@cat.Id" selected="@(Model.Filter?.CategoryId == cat.Id)">@cat.Name</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Id" selected="@(Model.Filter?.CategoryId == cat.Id)">@cat.Name</option>
+                            }
                         }
-                    }
-                </select>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-3 d-flex align-items-end gap-2">
+            <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-search me-1"></i> Filtruj
+                    <i class="bi bi-search me-1"></i>Filtruj
                 </button>
                 <a asp-action="Index" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-lg me-1"></i> Wyczyść
+                    <i class="bi bi-x-lg me-1"></i>Wyczyść
                 </a>
             </div>
         </form>
@@ -105,7 +107,16 @@
                                 </td>
                                 <td>@ticket.RequesterName</td>
                                 <td>@ticket.CategoryName</td>
-                                <td>@(ticket.AssignedToName ?? "<span class='text-muted'>-</span>")</td>
+                                <td>
+                                    @if (string.IsNullOrEmpty(ticket.AssignedToName))
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                    else
+                                    {
+                                        @ticket.AssignedToName
+                                    }
+                                </td>
                                 <td>
                                     <span class="badge @ticket.StatusBadgeClass">
                                         @ticket.StatusDisplay
@@ -126,11 +137,6 @@
                                             <li>
                                                 <a class="dropdown-item" asp-action="Details" asp-route-id="@ticket.Id">
                                                     <i class="bi bi-eye me-2"></i>Szczegóły
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" asp-action="Edit" asp-route-id="@ticket.Id">
-                                                    <i class="bi bi-pencil me-2"></i>Edytuj
                                                 </a>
                                             </li>
                                         </ul>

@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Entities;
+﻿using ITServiceHelpDesk.Models.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -344,11 +344,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             if (entry.Entity is Ticket ticket)
             {
-                ticket.UpdatedAt = DateTime.UtcNow;
+                ticket.UpdatedAt = DateTime.Now;
             }
             else if (entry.Entity is TicketComment comment)
             {
-                comment.UpdatedAt = DateTime.UtcNow;
+                comment.UpdatedAt = DateTime.Now;
             }
         }
     }

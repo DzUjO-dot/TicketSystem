@@ -7,19 +7,23 @@
     var isAdmin = User.IsInRole("Admin");
 }
 
-<div class="page-header d-flex justify-content-between align-items-center">
+<div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
     <div>
-        <div class="d-flex align-items-center gap-3 mb-2">
-            <h1 class="page-title mb-0">#@Model.TicketNumber</h1>
-            <span class="badge badge-status-@Model.Status.ToString().ToLower() fs-6">@Model.StatusDisplay</span>
-            <span class="badge badge-priority-@Model.Priority.ToString().ToLower() fs-6">@Model.PriorityDisplay</span>
-        </div>
-        <p class="page-subtitle mb-0">@Model.Title</p>
+        <h1 class="page-title mb-0">#@Model.TicketNumber</h1>
     </div>
-    <div class="page-actions">
-        <a asp-action="MyTickets" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>
-            Wróć
+    <div class="d-flex gap-2">
+        @if (isAdmin)
+        {
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger"
+                        onclick="return confirm('Czy na pewno chcesz usunąć zgłoszenie #@Model.TicketNumber? Tej operacji nie można cofnąć.')">
+                    <i class="bi bi-trash me-2"></i>Usuń zgłoszenie
+                </button>
+            </form>
+        }
+        <a asp-action="@(isAdmin ? "Index" : "MyTickets")" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-2"></i>Wróć
         </a>
     </div>
 </div>
@@ -214,7 +218,7 @@
 {
     <div class="card border-success mb-4">
         <div class="card-header text-success">
-            <i class="bi bi-check-circle-fill me-2"></i>Rozwiązanie
+            <span><i class="bi bi-check-circle-fill me-2"></i>Rozwiązane</span>
         </div>
         <div class="card-body">
             <p class="mb-0" style="white-space: pre-wrap;">@Model.ResolutionSummary</p>
@@ -222,47 +226,53 @@
     </div>
 }
 
-<!-- Owner: Close ticket -->
-@if (Model.CanClose && !isAgentOrAdmin)
+<div class="row g-4 mb-4">
+<!-- Owner: Respond when WaitingForUser -->
+@if (isOwner && !isAgentOrAdmin && Model.Status == ITServiceHelpDesk.Models.Enums.TicketStatus.WaitingForUser)
 {
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body p-3">
-            <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">Zamknij zgłoszenie</p>
-            <p class="small text-muted mb-3">Jeśli problem został rozwiązany lub nie potrzebujesz już pomocy, możesz zamknąć to zgłoszenie.</p>
-            <form asp-action="CloseTicket" asp-controller="Tickets" method="post"
-                  onsubmit="return confirm('Czy na pewno chcesz zamknąć to zgłoszenie?');">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="ticketId" value="@Model.Id" />
-                <button type="submit" class="btn btn-outline-secondary">
-                    <i class="bi bi-x-circle me-2"></i>Zamknij zgłoszenie
-                </button>
-            </form>
+    <div class="col-12 col-md">
+        <div class="card border-status-waitingforuser h-100">
+            <div class="card-body p-3">
+                <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
+                    <i class="bi bi-reply me-1 text-status-waitingforuser"></i>Oczekujemy na Twoją odpowiedź
+                </p>
+                <p class="small text-muted mb-3">
+                    Agent czeka na dodatkowe informacje. Po udzieleniu odpowiedzi w komentarzu kliknij poniższy przycisk, aby wznowić obsługę zgłoszenia.
+                </p>
+                <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ticketId" value="@Model.Id" />
+                    <input type="hidden" name="newStatus" value="2" />
+                    <button type="submit" class="btn btn-status-waitingforuser">
+                        <i class="bi bi-arrow-right-circle me-2"></i>Odpowiedziałem — wznów obsługę
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 }
 
-<!-- Owner: Respond when WaitingForUser -->
-@if (isOwner && !isAgentOrAdmin && Model.Status == ITServiceHelpDesk.Models.Enums.TicketStatus.WaitingForUser)
+<!-- Owner: Close ticket -->
+@if (Model.CanClose && !isAgentOrAdmin)
 {
-    <div class="card border-warning mb-4">
-        <div class="card-body p-3">
-            <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
-                <i class="bi bi-reply me-1 text-warning"></i>Oczekujemy na Twoją odpowiedź
-            </p>
-            <p class="small text-muted mb-3">
-                Agent czeka na dodatkowe informacje. Po udzieleniu odpowiedzi w komentarzu kliknij poniższy przycisk, aby wznowić obsługę zgłoszenia.
-            </p>
-            <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="ticketId" value="@Model.Id" />
-                <input type="hidden" name="newStatus" value="2" />
-                <button type="submit" class="btn btn-warning">
-                    <i class="bi bi-arrow-right-circle me-2"></i>Odpowiedziałem — wznów obsługę
-                </button>
-            </form>
+    <div class="col-12 col-md">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-3">
+                <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">Zamknij zgłoszenie</p>
+                <p class="small text-muted mb-3">Jeśli problem został rozwiązany lub nie potrzebujesz już pomocy, możesz zamknąć to zgłoszenie.</p>
+                <form asp-action="CloseTicket" asp-controller="Tickets" method="post"
+                      onsubmit="return confirm('Czy na pewno chcesz zamknąć to zgłoszenie?');">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ticketId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle me-2"></i>Zamknij zgłoszenie
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 }
+</div>
 
 <!-- Owner: Reopen (within 14 days of resolution) -->
 @if (Model.CanReopen)
@@ -294,8 +304,7 @@
 <!-- 3. Załączniki -->
 <div class="card mb-4">
     <div class="card-header">
-        <i class="bi bi-paperclip me-2"></i>
-        Załączniki (@(Model.Attachments?.Count() ?? 0))
+        <span><i class="bi bi-paperclip me-2"></i>Załączniki (@(Model.Attachments?.Count() ?? 0))</span>
     </div>
     <div class="card-body">
         @if (Model.Attachments != null && Model.Attachments.Any())
@@ -303,7 +312,11 @@
             <div class="d-flex flex-column gap-2 mb-3">
                 @foreach (var attachment in Model.Attachments)
                 {
-                    <div class="d-flex align-items-center gap-2 p-2 bg-light rounded">
+                    <div class="d-flex align-items-center gap-2 p-2 bg-light rounded attachment-row"
+                         data-preview-url="@Url.Action("ViewAttachment", "Tickets", new { id = attachment.Id })"
+                         data-download-url="@Url.Action("DownloadAttachment", "Tickets", new { id = attachment.Id })"
+                         data-content-type="@attachment.ContentType"
+                         data-file-name="@attachment.FileName">
                         <div class="flex-shrink-0">
                             @if (attachment.ContentType?.StartsWith("image/") == true)
                             {
@@ -313,17 +326,23 @@
                             {
                                 <i class="bi bi-file-pdf text-danger" style="font-size:1.25rem"></i>
                             }
+                            else if (attachment.ContentType?.StartsWith("video/") == true)
+                            {
+                                <i class="bi bi-file-earmark-play text-success" style="font-size:1.25rem"></i>
+                            }
                             else
                             {
                                 <i class="bi bi-file-earmark text-secondary" style="font-size:1.25rem"></i>
                             }
                         </div>
                         <div class="flex-grow-1 overflow-hidden">
-                            <a asp-action="ViewAttachment" asp-route-id="@attachment.Id" target="_blank"
-                               class="d-block text-truncate small fw-medium">@attachment.FileName</a>
+                            <button type="button" class="btn btn-link p-0 text-truncate d-block small fw-medium text-start attachment-preview-btn">@attachment.FileName</button>
                             <small class="text-muted">@attachment.FileSize</small>
                         </div>
                         <div class="flex-shrink-0 d-flex gap-1">
+                            <button type="button" class="btn btn-sm btn-outline-secondary attachment-preview-btn" title="Podgląd">
+                                <i class="bi bi-eye"></i>
+                            </button>
                             <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id"
                                class="btn btn-sm btn-outline-primary" title="Pobierz">
                                 <i class="bi bi-download"></i>
@@ -363,7 +382,7 @@
                         <i class="bi bi-upload me-1"></i>Prześlij
                     </button>
                 </div>
-                <div class="form-text">Maks. 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
+                <div class="form-text">Maks. 100 MB. Dozwolone: jpg, png, gif, pdf, doc, xls, txt, zip, mp4, webm, mov, ogg.</div>
             </form>
         }
     </div>
@@ -488,6 +507,24 @@
     </div>
 }
 
+<div class="modal fade" id="attachmentPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title text-truncate me-3" id="attachmentPreviewTitle"></h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0" id="attachmentPreviewBody"></div>
+            <div class="modal-footer py-2">
+                <a id="attachmentPreviewDownload" href="#" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-download me-1"></i>Pobierz
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         // Pokazuje/ukrywa pole opisu rozwiązania gdy status = Rozwiązany (4)
@@ -513,7 +550,7 @@
 
         // Załączniki
         (function () {
-            const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip';
+            const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.mp4,.webm,.mov,.ogg';
             const fileList = document.getElementById('attachment-file-list');
             const addBtn = document.getElementById('attachment-add-btn');
             const submitBtn = document.getElementById('attachment-submit-btn');
@@ -536,6 +573,42 @@
                 submitBtn.classList.toggle('d-none', !hasRows);
                 addBtn.disabled = fileList.children.length >= 5;
             }
+        })();
+
+        // Podgląd załączników
+        (function () {
+            const modal = document.getElementById('attachmentPreviewModal');
+            if (!modal) return;
+
+            document.querySelectorAll('.attachment-preview-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const row = this.closest('.attachment-row');
+                    const url = row.dataset.previewUrl;
+                    const contentType = row.dataset.contentType || '';
+                    const fileName = row.dataset.fileName;
+                    const downloadUrl = row.dataset.downloadUrl;
+
+                    document.getElementById('attachmentPreviewTitle').textContent = fileName;
+                    document.getElementById('attachmentPreviewDownload').href = downloadUrl;
+
+                    const body = document.getElementById('attachmentPreviewBody');
+                    if (contentType.startsWith('image/')) {
+                        body.innerHTML = '<div class="text-center p-3"><img src="' + url + '" class="img-fluid" style="max-height:75vh;"></div>';
+                    } else if (contentType === 'application/pdf') {
+                        body.innerHTML = '<iframe src="' + url + '" style="width:100%;height:75vh;border:none;"></iframe>';
+                    } else if (contentType.startsWith('video/')) {
+                        body.innerHTML = '<video src="' + url + '" controls class="d-block w-100" style="max-height:75vh;background:#000;"></video>';
+                    } else {
+                        body.innerHTML = '<div class="p-5 text-center text-muted"><i class="bi bi-file-earmark" style="font-size:3rem;"></i><p class="mt-3 mb-0">Podgląd tego typu pliku nie jest dostępny.<br>Pobierz plik, aby go otworzyć.</p></div>';
+                    }
+
+                    bootstrap.Modal.getOrCreateInstance(modal).show();
+                });
+            });
+
+            modal.addEventListener('hidden.bs.modal', function () {
+                document.getElementById('attachmentPreviewBody').innerHTML = '';
+            });
         })();
 
         // Obrót strzałki przy rozwijaniu historii

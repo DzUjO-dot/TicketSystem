@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Entities;
+﻿using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.ViewModels.Account;
 using ITServiceHelpDesk.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -92,7 +92,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            user.LastLoginAt = DateTime.UtcNow;
+            user.LastLoginAt = DateTime.Now;
             await _userManager.UpdateAsync(user);
 
             _logger.LogInformation("Admin {Email} zalogowany lokalnie.", model.Email);
@@ -165,7 +165,7 @@ public class AccountController : Controller
                     return RedirectToAction(nameof(Login));
                 }
 
-                existingUser.LastLoginAt = DateTime.UtcNow;
+                existingUser.LastLoginAt = DateTime.Now;
                 await _userManager.UpdateAsync(existingUser);
                 await _auditService.LogWithUserAsync(existingUser.Id, "SsoLogin", "User", existingUser.Id);
             }
@@ -227,7 +227,7 @@ public class AccountController : Controller
                 LastName = string.IsNullOrEmpty(lastName) ? "-" : lastName,
                 EmailConfirmed = true,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             var createResult = await _userManager.CreateAsync(user);
@@ -258,7 +258,7 @@ public class AccountController : Controller
         }
 
         // Zaloguj użytkownika
-        user.LastLoginAt = DateTime.UtcNow;
+        user.LastLoginAt = DateTime.Now;
         await _userManager.UpdateAsync(user);
         await _signInManager.SignInAsync(user, isPersistent: false);
         await _auditService.LogWithUserAsync(user.Id, "SsoLogin", "User", user.Id);

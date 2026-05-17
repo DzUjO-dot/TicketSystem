@@ -68,8 +68,7 @@
 <!-- Formularz -->
 <div class="card">
     <div class="card-header">
-        <i class="bi bi-ticket-perforated me-2"></i>
-        Formularz zgłoszenia
+        <span><i class="bi bi-ticket-perforated me-2"></i>Formularz zgłoszenia</span>
     </div>
     <div class="card-body">
         <form asp-action="Create" method="post" enctype="multipart/form-data">
@@ -114,7 +113,7 @@
                 <button type="button" id="add-file-btn" class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-plus me-1"></i>Dodaj plik
                 </button>
-                <div class="form-text">Maksymalnie 5 plików, każdy do 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
+                <div class="form-text">Maks. 5 plików, każdy do 100 MB. Dozwolone: jpg, png, gif, pdf, doc, xls, txt, zip, mp4, webm, mov, ogg.</div>
             </div>
 
             <div class="d-flex justify-content-end gap-2">
@@ -133,7 +132,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         const MAX_FILES = 5;
-        const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip';
+        const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.mp4,.webm,.mov,.ogg';
         const fileList = document.getElementById('file-list');
         const addBtn = document.getElementById('add-file-btn');
 

@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ITServiceHelpDesk.Models.Entities;
@@ -42,7 +42,7 @@ public class TicketAttachment
     public string UploadedByUserId { get; set; } = string.Empty;
 
     [Display(Name = "Data przesłania")]
-    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UploadedAt { get; set; } = DateTime.Now;
 
     // ============================================
     // COMPUTED PROPERTIES
@@ -93,6 +93,7 @@ public class TicketAttachment
         ".zip" or ".rar" or ".7z" => "bi-file-earmark-zip",
         ".txt" => "bi-file-earmark-text",
         ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".webp" => "bi-file-earmark-image",
+        ".mp4" or ".webm" or ".mov" or ".ogg" => "bi-file-earmark-play",
         _ => "bi-file-earmark"
     };
 

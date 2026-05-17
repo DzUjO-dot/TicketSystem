@@ -20,9 +20,9 @@
     // Kolor lewego paska
     string StatusAccent(TicketStatus s) => s switch
     {
-        TicketStatus.New             => "#3b82f6",
-        TicketStatus.InProgress      => "#d97706",
-        TicketStatus.WaitingForUser  => "#0891b2",
+        TicketStatus.New             => "#14b8a6",
+        TicketStatus.InProgress      => "#6366f1",
+        TicketStatus.WaitingForUser  => "#ca8a04",
         TicketStatus.Resolved        => "#16a34a",
         _                            => "#6b7280"
     };
@@ -52,15 +52,15 @@
         <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.TotalTickets</span>
     </a>
     <a asp-action="MyTickets" asp-route-status="New" class="btn @Cls("New")">
-        <span class="status-dot" style="background:#3b82f6"></span> Nowe
+        <span class="status-dot" style="background:#14b8a6"></span> Nowe
         <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.NewTickets</span>
     </a>
     <a asp-action="MyTickets" asp-route-status="InProgress" class="btn @Cls("InProgress")">
-        <span class="status-dot" style="background:#d97706"></span> W realizacji
+        <span class="status-dot" style="background:#6366f1"></span> W realizacji
         <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.InProgressTickets</span>
     </a>
     <a asp-action="MyTickets" asp-route-status="WaitingForUser" class="btn @Cls("WaitingForUser")">
-        <span class="status-dot" style="background:#0891b2"></span> Oczekuje
+        <span class="status-dot" style="background:#ca8a04"></span> Oczekuje
         <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.WaitingForUserTickets</span>
     </a>
     <a asp-action="MyTickets" asp-route-status="Resolved" class="btn @Cls("Resolved")">

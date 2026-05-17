@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Entities;
+﻿using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -123,9 +123,9 @@ public class TicketDetailsViewModel
     
     public string StatusBadgeClass => Status switch
     {
-        TicketStatus.New => "bg-purple",
-        TicketStatus.InProgress => "bg-warning text-dark",
-        TicketStatus.WaitingForUser => "bg-info",
+        TicketStatus.New => "badge-status-new",
+        TicketStatus.InProgress => "badge-status-inprogress",
+        TicketStatus.WaitingForUser => "badge-status-waitingforuser",
         TicketStatus.Resolved => "bg-success",
         _ => "bg-secondary"
     };
@@ -210,7 +210,7 @@ public class TicketDetailsViewModel
         vm.CanReopen = isOwner &&
                        ticket.Status == TicketStatus.Resolved &&
                        ticket.ResolvedAt.HasValue &&
-                       (DateTime.UtcNow - ticket.ResolvedAt.Value).TotalDays <= 14;
+                       (DateTime.Now - ticket.ResolvedAt.Value).TotalDays <= 14;
         vm.CanAddInternalComment = isAgent || isAdmin;
 
         // Map comments
@@ -295,7 +295,9 @@ public class TicketAttachmentViewModel
             FileIcon = attachment.FileIcon,
             IsImage = attachment.IsImage,
             UploadedByName = attachment.UploadedBy.FullName,
-            UploadedAt = attachment.UploadedAt
+            UploadedAt = attachment.UploadedAt,
+            ContentType = attachment.ContentType,
+            FilePath = attachment.FilePath
         };
     }
 }
