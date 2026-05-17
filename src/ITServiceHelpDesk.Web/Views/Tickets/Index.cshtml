@@ -29,7 +29,7 @@
                 <select name="Status" class="form-select">
                     <option value="">Wszystkie</option>
                     <option value="New" selected="@(Model.Filter?.Status?.ToString() == "New")">Nowe</option>
-                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W trakcie</option>
+                    <option value="InProgress" selected="@(Model.Filter?.Status?.ToString() == "InProgress")">W realizacji</option>
                     <option value="WaitingForUser" selected="@(Model.Filter?.Status?.ToString() == "WaitingForUser")">Oczekuje na użytkownika</option>
                     <option value="Resolved" selected="@(Model.Filter?.Status?.ToString() == "Resolved")">Rozwiązane</option>
                 </select>

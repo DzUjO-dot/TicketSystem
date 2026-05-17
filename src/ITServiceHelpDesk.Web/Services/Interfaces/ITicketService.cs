@@ -87,6 +87,10 @@ public interface ITicketService
     /// </summary>
     Task<bool> ReopenTicketAsync(int ticketId, string userId);
 
+    Task<bool> UpdateContentAsync(int ticketId, string title, string description, string userId);
+
+    Task<bool> UpdateInfoAsync(int ticketId, int categoryId, TicketPriority priority, DateTime? dueDate, string? assignedToUserId, string userId);
+
     /// <summary>
     /// Zmienia priorytet zgłoszenia
     /// </summary>
@@ -193,6 +197,7 @@ public class AgentTicketStatsViewModel
     public int NewTickets { get; set; }
     public int InProgressTickets { get; set; }
     public int WaitingForUserTickets { get; set; }
+    public int ResolvedTickets { get; set; }
     public int ResolvedToday { get; set; }
     public int OverdueTickets { get; set; }
 }

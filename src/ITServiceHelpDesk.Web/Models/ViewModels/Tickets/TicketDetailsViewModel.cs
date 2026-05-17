@@ -114,6 +114,8 @@ public class TicketDetailsViewModel
 
     public SelectList? StatusOptions { get; set; }
     public SelectList? AgentOptions { get; set; }
+    public SelectList? CategoryOptions { get; set; }
+    public SelectList? PriorityOptions { get; set; }
 
     // ============================================
     // HELPERS
@@ -140,7 +142,7 @@ public class TicketDetailsViewModel
     public string StatusDisplayName => Status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.InProgress => "W trakcie",
+        TicketStatus.InProgress => "W realizacji",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
         _ => Status.ToString()
@@ -189,6 +191,7 @@ public class TicketDetailsViewModel
             AssignedToEmail = ticket.AssignedTo?.Email,
             AssignedToInitials = ticket.AssignedTo?.Initials,
             AssignedToUserId = ticket.AssignedToUserId,
+            CreatedByUserId = ticket.CreatedByUserId,
             IsOverdue = ticket.IsOverdue,
             IsOpen = ticket.IsOpen,
             Age = ticket.Age,
@@ -203,7 +206,7 @@ public class TicketDetailsViewModel
         vm.CanComment = ticket.IsOpen || isAgent || isAdmin;
         vm.CanChangeStatus = isAgent || isAdmin;
         vm.CanAssign = isAgent || isAdmin;
-        vm.CanClose = isAgent || isAdmin;
+        vm.CanClose = (isOwner && ticket.IsOpen) || isAgent || isAdmin;
         vm.CanReopen = isOwner &&
                        ticket.Status == TicketStatus.Resolved &&
                        ticket.ResolvedAt.HasValue &&

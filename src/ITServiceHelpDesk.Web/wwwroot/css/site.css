@@ -557,6 +557,7 @@ a:hover {
 .auth-layout {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
@@ -844,6 +845,30 @@ a:hover {
         display: none;
     }
 }
+
+/* ============================================
+   STATUS FILTER BUTTONS (matching badge colors)
+   ============================================ */
+
+.btn-status-new { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.btn-status-new:hover { background: #2563eb; border-color: #2563eb; color: #fff; }
+.btn-outline-status-new { color: #3b82f6; border-color: #3b82f6; background: transparent; }
+.btn-outline-status-new:hover { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+
+.btn-status-inprogress { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+.btn-status-inprogress:hover { background: #d97706; border-color: #d97706; color: #fff; }
+.btn-outline-status-inprogress { color: #f59e0b; border-color: #f59e0b; background: transparent; }
+.btn-outline-status-inprogress:hover { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+
+.btn-status-waitingforuser { background: #ca8a04; border-color: #ca8a04; color: #fff; }
+.btn-status-waitingforuser:hover { background: #a16207; border-color: #a16207; color: #fff; }
+.btn-outline-status-waitingforuser { color: #ca8a04; border-color: #ca8a04; background: transparent; }
+.btn-outline-status-waitingforuser:hover { background: #ca8a04; border-color: #ca8a04; color: #fff; }
+
+.btn-status-resolved { background: #10b981; border-color: #10b981; color: #fff; }
+.btn-status-resolved:hover { background: #059669; border-color: #059669; color: #fff; }
+.btn-outline-status-resolved { color: #10b981; border-color: #10b981; background: transparent; }
+.btn-outline-status-resolved:hover { background: #10b981; border-color: #10b981; color: #fff; }
 
 /* ============================================
    UTILITIES

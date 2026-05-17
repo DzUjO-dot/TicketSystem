@@ -329,8 +329,8 @@ public static class IdentitySeeder
                 UserId = agent1.Id,
                 Action = "Zmiana statusu",
                 OldValue = "Nowy",
-                NewValue = "W trakcie",
-                Description = "Status zmieniony z Nowy na W trakcie",
+                NewValue = "W realizacji",
+                Description = "Status zmieniony z Nowy na W realizacji",
                 CreatedAt = DateTime.UtcNow.AddHours(-4)
             }
         };

@@ -102,7 +102,7 @@ public class TicketListItemViewModel
     private static string GetStatusDisplayName(Models.Enums.TicketStatus status) => status switch
     {
         Models.Enums.TicketStatus.New => "Nowy",
-        Models.Enums.TicketStatus.InProgress => "W trakcie",
+        Models.Enums.TicketStatus.InProgress => "W realizacji",
         Models.Enums.TicketStatus.WaitingForUser => "Oczekuje",
         Models.Enums.TicketStatus.Resolved => "Rozwiązany",
         _ => status.ToString()

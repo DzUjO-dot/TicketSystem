@@ -436,12 +436,18 @@ public class AccountController : Controller
     [HttpPost]
     [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> MarkAllNotificationsRead()
+    public async Task<IActionResult> MarkAllNotificationsRead(string? returnUrl = null)
     {
         var userId = _userManager.GetUserId(User);
         if (userId != null)
             await _notificationService.MarkAllAsReadAsync(userId);
-        return RedirectToAction("Index", "Dashboard");
+
+        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return Redirect(returnUrl);
+
+        return Redirect(Request.Headers.Referer.ToString() is { Length: > 0 } referer
+            ? referer
+            : Url.Action("Index", "Dashboard")!);
     }
 
     [HttpGet]

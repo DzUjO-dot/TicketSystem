@@ -17,13 +17,6 @@
         <p class="page-subtitle mb-0">@Model.Title</p>
     </div>
     <div class="page-actions">
-        @if (isOwner || isAdmin)
-        {
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-                <i class="bi bi-pencil me-2"></i>
-                Edytuj
-            </a>
-        }
         <a asp-action="MyTickets" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>
             Wróć
@@ -31,419 +24,465 @@
     </div>
 </div>
 
-<div class="row">
-    <!-- Main Content -->
-    <div class="col-lg-8">
-        <!-- Ticket Description -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="bi bi-card-text me-2"></i>
-                Opis zgłoszenia
-            </div>
-            <div class="card-body">
-                <div style="white-space: pre-wrap;">@Model.Description</div>
-            </div>
-        </div>
-
-        <!-- Attachments -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="bi bi-paperclip me-2"></i>
-                Załączniki (@(Model.Attachments?.Count() ?? 0))
-            </div>
-            <div class="card-body">
-                @if (Model.Attachments != null && Model.Attachments.Any())
-                {
-                    <div class="row g-3 mb-3">
-                        @foreach (var attachment in Model.Attachments)
-                        {
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center p-3 bg-light rounded">
-                                    @if (attachment.ContentType?.StartsWith("image/") == true)
-                                    {
-                                        <i class="bi bi-file-image text-primary me-3" style="font-size: 24px;"></i>
-                                    }
-                                    else if (attachment.ContentType == "application/pdf")
-                                    {
-                                        <i class="bi bi-file-pdf text-danger me-3" style="font-size: 24px;"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-file-earmark text-secondary me-3" style="font-size: 24px;"></i>
-                                    }
-                                    <div class="flex-grow-1 min-width-0">
-                                        <a asp-action="ViewAttachment" asp-route-id="@attachment.Id" target="_blank" class="text-truncate d-block">
-                                            @attachment.FileName
-                                        </a>
-                                        <small class="text-muted">@attachment.FileSize</small>
-                                    </div>
-                                    <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id" class="btn btn-sm btn-outline-primary ms-2" title="Pobierz">
-                                        <i class="bi bi-download"></i>
-                                    </a>
-                                    @if (isOwner || isAgentOrAdmin)
-                                    {
-                                        <form asp-action="DeleteAttachment" asp-controller="Tickets" method="post" class="ms-1"
-                                              onsubmit="return confirm('Czy na pewno chcesz usunąć ten załącznik?');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@attachment.Id" />
-                                            <input type="hidden" name="ticketId" value="@Model.Id" />
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted small mb-3">Brak załączników.</p>
-                }
-
-                @if (isOwner || isAgentOrAdmin)
-                {
-                    <form asp-action="UploadAttachment" asp-controller="Tickets" method="post" enctype="multipart/form-data">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="ticketId" value="@Model.Id" />
-                        <div class="input-group input-group-sm">
-                            <input type="file" name="file" class="form-control"
-                                   accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" required />
-                            <button type="submit" class="btn btn-outline-secondary">
-                                <i class="bi bi-upload me-1"></i>Dodaj
-                            </button>
-                        </div>
-                        <div class="form-text">Maks. 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
-                    </form>
-                }
-            </div>
-        </div>
-
-        <!-- Comments -->
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>
-                    <i class="bi bi-chat-dots me-2"></i>
-                    Komentarze (@(Model.Comments?.Count() ?? 0))
-                </span>
-            </div>
-            <div class="card-body">
-                @if (Model.Comments != null && Model.Comments.Any())
-                {
-                    @foreach (var comment in Model.Comments.Where(c => c.IsVisible))
-                    {
-                        <div class="comment @(comment.IsInternal ? "internal" : "")">
-                            <div class="comment-header">
-                                <div class="comment-avatar">
-                                    @comment.AuthorName?.Substring(0, 1).ToUpper()
-                                </div>
-                                <div>
-                                    <span class="comment-author">@comment.AuthorName</span>
-                                    @if (comment.IsInternal)
-                                    {
-                                        <span class="badge bg-warning ms-2">Wewnętrzny</span>
-                                    }
-                                </div>
-                                <span class="comment-time ms-auto">@comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
-                            </div>
-                            <div class="comment-content">
-                                @comment.Content
-                            </div>
-                        </div>
-                    }
-                }
-                else
-                {
-                    <p class="text-muted text-center mb-0">Brak komentarzy</p>
-                }
-            </div>
-
-            <!-- Add Comment Form -->
-            <div class="card-footer">
-                <form asp-action="AddComment" asp-controller="Tickets" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="ticketId" value="@Model.Id" />
-                    <div class="mb-3">
-                        <textarea name="content" class="form-control" rows="3"
-                                  placeholder="Napisz komentarz..." required></textarea>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        @if (isAgentOrAdmin)
-                        {
-                            <div class="form-check">
-                                <input type="checkbox" name="isInternal" value="true" class="form-check-input" id="isInternal">
-                                <label class="form-check-label" for="isInternal">
-                                    Komentarz wewnętrzny (widoczny tylko dla agentów)
-                                </label>
-                            </div>
-                        }
-                        else
-                        {
-                            <div></div>
-                        }
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send me-1"></i>
-                            Wyślij
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- History — collapsible -->
-        @if (Model.History != null && Model.History.Any())
-        {
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center"
-                     role="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse"
-                     aria-expanded="false" style="cursor:pointer; user-select:none;">
-                    <span>
-                        <i class="bi bi-clock-history me-2"></i>
-                        Historia zmian (@Model.History.Count)
-                    </span>
-                    <i class="bi bi-chevron-down" id="historyChevron"></i>
-                </div>
-                <div id="historyCollapse" class="collapse">
-                    <div class="card-body">
-                        <div class="timeline">
-                            @foreach (var entry in Model.History)
-                            {
-                                <div class="timeline-item">
-                                    <div class="timeline-icon">
-                                        <i class="bi bi-circle-fill"></i>
-                                    </div>
-                                    <div class="timeline-content">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <strong>@entry.FieldName</strong>
-                                                @if (!string.IsNullOrEmpty(entry.OldValue) && !string.IsNullOrEmpty(entry.NewValue))
-                                                {
-                                                    <span class="text-muted">zmieniono z</span>
-                                                    <span class="badge bg-secondary">@entry.OldValue</span>
-                                                    <span class="text-muted">na</span>
-                                                    <span class="badge bg-primary">@entry.NewValue</span>
-                                                }
-                                                else if (!string.IsNullOrEmpty(entry.NewValue))
-                                                {
-                                                    <span class="text-muted">ustawiono na</span>
-                                                    <span class="badge bg-primary">@entry.NewValue</span>
-                                                }
-                                            </div>
-                                            <small class="timeline-time">@entry.ChangedAt.ToString("dd.MM HH:mm")</small>
-                                        </div>
-                                        <small class="text-muted">przez @entry.ChangedByName</small>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-
-    <!-- Sidebar -->
-    <div class="col-lg-4">
-        <!-- Ticket Info -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="bi bi-info-circle me-2"></i>
-                Informacje
-            </div>
-            <div class="card-body">
-                <table class="table table-sm mb-0">
-                    <tr>
-                        <td class="text-muted">Kategoria</td>
-                        <td class="text-end"><strong>@Model.CategoryName</strong></td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Zgłaszający</td>
-                        <td class="text-end">@Model.RequesterName</td>
-                    </tr>
-                    <tr>
-                        <td class="text-muted">Przypisany do</td>
-                        <td class="text-end">
-                            @if (!string.IsNullOrEmpty(Model.AssignedToName))
-                            {
-                                @Model.AssignedToName
-                            }
-                            else
-                            {
-                                <span class="text-muted fst-italic">Nieprzypisane</span>
-                            }
-                        </td>
-                    </tr>
-                    @if (Model.DueDate.HasValue)
-                    {
-                        <tr>
-                            <td class="text-muted">SLA / Termin</td>
-                            <td class="text-end">
-                                @if (Model.IsOverdue)
-                                {
-                                    <span class="text-danger fw-semibold">
-                                        <i class="bi bi-exclamation-circle me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
-                                    </span>
-                                    <div><small class="text-danger">Przeterminowane</small></div>
-                                }
-                                else if (Model.TimeToDeadline.HasValue && Model.TimeToDeadline.Value.TotalHours < 24)
-                                {
-                                    <span class="text-warning fw-semibold">
-                                        <i class="bi bi-clock me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
-                                    </span>
-                                    <div><small class="text-warning">Mniej niż 24h</small></div>
-                                }
-                                else
-                                {
-                                    <span>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                    <tr>
-                        <td class="text-muted">Utworzono</td>
-                        <td class="text-end">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                    </tr>
-                    @if (Model.UpdatedAt != Model.CreatedAt)
-                    {
-                        <tr>
-                            <td class="text-muted">Aktualizacja</td>
-                            <td class="text-end">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</td>
-                        </tr>
-                    }
-                    @if (Model.ResolvedAt.HasValue)
-                    {
-                        <tr>
-                            <td class="text-muted">Rozwiązano</td>
-                            <td class="text-end">@Model.ResolvedAt.Value.ToString("dd.MM.yyyy HH:mm")</td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-
-        <!-- Resolution Summary -->
-        @if (!string.IsNullOrEmpty(Model.ResolutionSummary))
-        {
-            <div class="card border-success mb-4">
-                <div class="card-header text-success">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    Rozwiązanie
-                </div>
-                <div class="card-body">
-                    <p class="mb-0" style="white-space: pre-wrap;">@Model.ResolutionSummary</p>
-                </div>
-            </div>
-        }
-
-        <!-- Agent Actions -->
+<!-- 1. Opis zgłoszenia -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-card-text me-2"></i>Opis zgłoszenia</span>
         @if (isAgentOrAdmin)
         {
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-3">
-                    <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">Akcje agenta</p>
-                    <div class="d-flex flex-column gap-2">
-                        @if (string.IsNullOrEmpty(Model.AssignedToName))
-                        {
-                            <form asp-action="Take" asp-controller="Tickets" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="ticketId" value="@Model.Id" />
-                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
-                                        style="background:#eff6ff;color:#2563eb">
-                                    <i class="bi bi-person-plus me-2"></i>Przejmij zgłoszenie
-                                </button>
-                            </form>
-                        }
-                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.InProgress &&
-                             Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
-                        {
-                            <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="ticketId" value="@Model.Id" />
-                                <input type="hidden" name="newStatus" value="2" />
-                                <button type="submit" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
-                                        style="background:#f0f9ff;color:#0284c7">
-                                    <i class="bi bi-play-circle me-2"></i>Rozpocznij pracę
-                                </button>
-                            </form>
-                        }
-                        @if (Model.Status != ITServiceHelpDesk.Models.Enums.TicketStatus.Resolved)
-                        {
-                            <button type="button" class="btn w-100 text-start border-0 rounded-3 py-2 px-3"
-                                    style="background:#f0fdf4;color:#16a34a"
-                                    data-bs-toggle="modal" data-bs-target="#resolutionModal">
-                                <i class="bi bi-check-circle me-2"></i>Oznacz jako rozwiązane
-                            </button>
-                        }
-                    </div>
-                </div>
-            </div>
+            <button type="button" class="btn btn-link btn-sm text-muted p-0"
+                    onclick="toggleEdit('content')" title="Edytuj treść">
+                <i class="bi bi-pencil" id="content-icon"></i>
+            </button>
         }
-
-        <!-- Owner: Reopen (within 14 days of resolution) -->
-        @if (Model.CanReopen)
+    </div>
+    <div class="card-body">
+        <div id="content-view">
+            <p class="fw-semibold mb-2">@Model.Title</p>
+            <div style="white-space: pre-wrap;" class="text-muted">@Model.Description</div>
+        </div>
+        @if (isAgentOrAdmin)
         {
-            <div class="card border-warning mb-4">
-                <div class="card-body p-3">
-                    <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
-                        <i class="bi bi-exclamation-triangle me-1 text-warning"></i>
-                        Niezadowolony z rozwiązania?
-                    </p>
-                    <p class="small text-muted mb-3">
-                        Możesz wznowić zgłoszenie w ciągu 14 dni od jego rozwiązania.
-                        @if (Model.ResolvedAt.HasValue)
-                        {
-                            var daysLeft = 14 - (int)(DateTime.UtcNow - Model.ResolvedAt.Value).TotalDays;
-                            <br /><strong>Pozostało: @daysLeft dni</strong>
-                        }
-                    </p>
-                    <form asp-action="ReopenTicket" asp-controller="Tickets" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="ticketId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-warning w-100">
-                            <i class="bi bi-arrow-counterclockwise me-2"></i>Wznów zgłoszenie
-                        </button>
-                    </form>
+            <form id="content-edit" class="d-none"
+                  asp-action="UpdateContent" asp-controller="Tickets" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Tytuł</label>
+                    <input type="text" name="title" class="form-control"
+                           value="@Model.Title" maxlength="200" required />
                 </div>
-            </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Opis</label>
+                    <textarea name="description" class="form-control" rows="8"
+                              required minlength="10">@Model.Description</textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-check me-1"></i>Zapisz
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="toggleEdit('content')">Anuluj</button>
+                </div>
+            </form>
         }
     </div>
 </div>
 
-<!-- Modal: Rozwiązanie -->
-@if (isAgentOrAdmin)
-{
-    <div class="modal fade" id="resolutionModal" tabindex="-1" aria-labelledby="resolutionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="resolutionModalLabel">
-                        <i class="bi bi-check-circle text-success me-2"></i>Opis rozwiązania
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+<!-- 2. Informacje -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-info-circle me-2"></i>Informacje</span>
+        @if (isAgentOrAdmin)
+        {
+            <button type="button" class="btn btn-link btn-sm text-muted p-0"
+                    onclick="toggleEdit('info')" title="Edytuj informacje">
+                <i class="bi bi-pencil" id="info-icon"></i>
+            </button>
+        }
+    </div>
+    <div class="card-body">
+        <!-- View -->
+        <div id="info-view">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Status</p>
+                    <span class="badge @Model.StatusBadgeClass">@Model.StatusDisplay</span>
                 </div>
-                <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="modal-body">
-                        <input type="hidden" name="ticketId" value="@Model.Id" />
-                        <input type="hidden" name="newStatus" value="4" />
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                Co rozwiązało problem? <span class="text-danger">*</span>
-                            </label>
-                            <textarea name="resolutionSummary" class="form-control" rows="5"
-                                      placeholder="Opisz co zostało zrobione, aby rozwiązać zgłoszenie..."
-                                      required minlength="10"></textarea>
-                            <div class="form-text">Pole wymagane (min. 10 znaków).</div>
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Kategoria</p>
+                    <strong class="d-block">@Model.CategoryName</strong>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Priorytet</p>
+                    <span class="badge @Model.PriorityBadgeClass">@Model.PriorityDisplay</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Przypisany do</p>
+                    @if (!string.IsNullOrEmpty(Model.AssignedToName))
+                    {
+                        <span class="d-block">@Model.AssignedToName</span>
+                    }
+                    else
+                    {
+                        <span class="d-block text-muted fst-italic">Nieprzypisane</span>
+                    }
+                </div>
+                @if (Model.DueDate.HasValue)
+                {
+                    <div class="col-6 col-md-3">
+                        <p class="text-muted small mb-1">SLA / Termin</p>
+                        @if (Model.IsOverdue)
+                        {
+                            <span class="text-danger fw-semibold small d-block">
+                                <i class="bi bi-exclamation-circle me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                            <small class="text-danger">Przeterminowane</small>
+                        }
+                        else if (Model.TimeToDeadline.HasValue && Model.TimeToDeadline.Value.TotalHours < 24)
+                        {
+                            <span class="text-warning fw-semibold small d-block">
+                                <i class="bi bi-clock me-1"></i>@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                            <small class="text-warning">Mniej niż 24h</small>
+                        }
+                        else
+                        {
+                            <span class="small d-block">@Model.DueDate.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                        }
+                    </div>
+                }
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Zgłaszający</p>
+                    <span class="d-block">@Model.RequesterName</span>
+                </div>
+                <div class="col-6 col-md-3">
+                    <p class="text-muted small mb-1">Utworzono</p>
+                    <span class="d-block small">@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+                @if (Model.UpdatedAt != Model.CreatedAt)
+                {
+                    <div class="col-6 col-md-3">
+                        <p class="text-muted small mb-1">Aktualizacja</p>
+                        <span class="d-block small">@Model.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                    </div>
+                }
+                @if (Model.ResolvedAt.HasValue)
+                {
+                    <div class="col-6 col-md-3">
+                        <p class="text-muted small mb-1">Rozwiązano</p>
+                        <span class="d-block small">@Model.ResolvedAt.Value.ToString("dd.MM.yyyy HH:mm")</span>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- Edit -->
+        @if (isAgentOrAdmin)
+        {
+            <form id="info-edit" class="d-none"
+                  asp-action="UpdateInfo" asp-controller="Tickets" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Status</label>
+                        <select name="newStatus" id="info-status-select" class="form-select form-select-sm"
+                                asp-items="Model.StatusOptions" onchange="toggleResolutionSummary()"></select>
+                    </div>
+                    <div class="col-md-6 d-none" id="resolution-summary-group">
+                        <label class="form-label small fw-semibold">Opis rozwiązania <span class="text-danger">*</span></label>
+                        <textarea name="resolutionSummary" class="form-control form-control-sm" rows="2"
+                                  placeholder="Opisz co zostało zrobione..."></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Kategoria</label>
+                        <select name="categoryId" class="form-select form-select-sm"
+                                asp-items="Model.CategoryOptions"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Priorytet</label>
+                        <select name="priority" class="form-select form-select-sm"
+                                asp-items="Model.PriorityOptions"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Przypisany agent</label>
+                        <select name="assignedToUserId" class="form-select form-select-sm"
+                                asp-items="Model.AgentOptions">
+                            <option value="">— Nieprzypisane —</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Termin (SLA)</label>
+                        <input type="datetime-local" name="dueDate" class="form-control form-control-sm"
+                               value="@(Model.DueDate.HasValue ? Model.DueDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        <i class="bi bi-check me-1"></i>Zapisz
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                            onclick="toggleEdit('info')">Anuluj</button>
+                </div>
+            </form>
+        }
+    </div>
+</div>
+
+<!-- Resolution Summary -->
+@if (!string.IsNullOrEmpty(Model.ResolutionSummary))
+{
+    <div class="card border-success mb-4">
+        <div class="card-header text-success">
+            <i class="bi bi-check-circle-fill me-2"></i>Rozwiązanie
+        </div>
+        <div class="card-body">
+            <p class="mb-0" style="white-space: pre-wrap;">@Model.ResolutionSummary</p>
+        </div>
+    </div>
+}
+
+<!-- Owner: Close ticket -->
+@if (Model.CanClose && !isAgentOrAdmin)
+{
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">Zamknij zgłoszenie</p>
+            <p class="small text-muted mb-3">Jeśli problem został rozwiązany lub nie potrzebujesz już pomocy, możesz zamknąć to zgłoszenie.</p>
+            <form asp-action="CloseTicket" asp-controller="Tickets" method="post"
+                  onsubmit="return confirm('Czy na pewno chcesz zamknąć to zgłoszenie?');">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <button type="submit" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-2"></i>Zamknij zgłoszenie
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<!-- Owner: Respond when WaitingForUser -->
+@if (isOwner && !isAgentOrAdmin && Model.Status == ITServiceHelpDesk.Models.Enums.TicketStatus.WaitingForUser)
+{
+    <div class="card border-warning mb-4">
+        <div class="card-body p-3">
+            <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
+                <i class="bi bi-reply me-1 text-warning"></i>Oczekujemy na Twoją odpowiedź
+            </p>
+            <p class="small text-muted mb-3">
+                Agent czeka na dodatkowe informacje. Po udzieleniu odpowiedzi w komentarzu kliknij poniższy przycisk, aby wznowić obsługę zgłoszenia.
+            </p>
+            <form asp-action="ChangeStatus" asp-controller="Tickets" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <input type="hidden" name="newStatus" value="2" />
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-arrow-right-circle me-2"></i>Odpowiedziałem — wznów obsługę
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<!-- Owner: Reopen (within 14 days of resolution) -->
+@if (Model.CanReopen)
+{
+    <div class="card border-warning mb-4">
+        <div class="card-body p-3">
+            <p class="text-muted small text-uppercase fw-semibold mb-2" style="letter-spacing:.05em">
+                <i class="bi bi-exclamation-triangle me-1 text-warning"></i>Niezadowolony z rozwiązania?
+            </p>
+            <p class="small text-muted mb-3">
+                Możesz wznowić zgłoszenie w ciągu 14 dni od jego rozwiązania.
+                @if (Model.ResolvedAt.HasValue)
+                {
+                    var daysLeft = 14 - (int)(DateTime.UtcNow - Model.ResolvedAt.Value).TotalDays;
+                    <br /><strong>Pozostało: @daysLeft dni</strong>
+                }
+            </p>
+            <form asp-action="ReopenTicket" asp-controller="Tickets" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <button type="submit" class="btn btn-warning">
+                    <i class="bi bi-arrow-counterclockwise me-2"></i>Wznów zgłoszenie
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<!-- 3. Załączniki -->
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-paperclip me-2"></i>
+        Załączniki (@(Model.Attachments?.Count() ?? 0))
+    </div>
+    <div class="card-body">
+        @if (Model.Attachments != null && Model.Attachments.Any())
+        {
+            <div class="d-flex flex-column gap-2 mb-3">
+                @foreach (var attachment in Model.Attachments)
+                {
+                    <div class="d-flex align-items-center gap-2 p-2 bg-light rounded">
+                        <div class="flex-shrink-0">
+                            @if (attachment.ContentType?.StartsWith("image/") == true)
+                            {
+                                <i class="bi bi-file-image text-primary" style="font-size:1.25rem"></i>
+                            }
+                            else if (attachment.ContentType == "application/pdf")
+                            {
+                                <i class="bi bi-file-pdf text-danger" style="font-size:1.25rem"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-file-earmark text-secondary" style="font-size:1.25rem"></i>
+                            }
+                        </div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <a asp-action="ViewAttachment" asp-route-id="@attachment.Id" target="_blank"
+                               class="d-block text-truncate small fw-medium">@attachment.FileName</a>
+                            <small class="text-muted">@attachment.FileSize</small>
+                        </div>
+                        <div class="flex-shrink-0 d-flex gap-1">
+                            <a asp-action="DownloadAttachment" asp-route-id="@attachment.Id"
+                               class="btn btn-sm btn-outline-primary" title="Pobierz">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            @if (isOwner || isAgentOrAdmin)
+                            {
+                                <form asp-action="DeleteAttachment" asp-controller="Tickets" method="post"
+                                      onsubmit="return confirm('Czy na pewno chcesz usunąć ten załącznik?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@attachment.Id" />
+                                    <input type="hidden" name="ticketId" value="@Model.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Usuń">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Anuluj</button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle me-1"></i>Oznacz jako rozwiązane
-                        </button>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted small mb-3">Brak załączników.</p>
+        }
+        @if (isOwner || isAgentOrAdmin)
+        {
+            <form asp-action="UploadAttachment" asp-controller="Tickets" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="ticketId" value="@Model.Id" />
+                <div id="attachment-file-list" class="d-flex flex-column gap-2 mb-2"></div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" id="attachment-add-btn" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-plus me-1"></i>Dodaj plik
+                    </button>
+                    <button type="submit" id="attachment-submit-btn" class="btn btn-primary btn-sm d-none">
+                        <i class="bi bi-upload me-1"></i>Prześlij
+                    </button>
+                </div>
+                <div class="form-text">Maks. 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
+            </form>
+        }
+    </div>
+</div>
+
+<!-- 4. Komentarze -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>
+            <i class="bi bi-chat-dots me-2"></i>
+            Komentarze (@(Model.Comments?.Count() ?? 0))
+        </span>
+    </div>
+    <div class="card-body">
+        @if (Model.Comments != null && Model.Comments.Any())
+        {
+            @foreach (var comment in Model.Comments.Where(c => c.IsVisible))
+            {
+                <div class="comment @(comment.IsInternal ? "internal" : "")">
+                    <div class="comment-header">
+                        <div class="comment-avatar">
+                            @comment.AuthorName?.Substring(0, 1).ToUpper()
+                        </div>
+                        <div>
+                            <span class="comment-author">@comment.AuthorName</span>
+                            @if (comment.IsInternal)
+                            {
+                                <span class="badge bg-warning ms-2">Wewnętrzny</span>
+                            }
+                        </div>
+                        <span class="comment-time ms-auto">@comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
                     </div>
-                </form>
+                    <div class="comment-content">
+                        @comment.Content
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted text-center mb-0">Brak komentarzy</p>
+        }
+    </div>
+    <div class="card-footer">
+        <form asp-action="AddComment" asp-controller="Tickets" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ticketId" value="@Model.Id" />
+            <div class="mb-3">
+                <textarea name="content" class="form-control" rows="3"
+                          placeholder="Napisz komentarz..." required></textarea>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                @if (isAgentOrAdmin)
+                {
+                    <div class="form-check">
+                        <input type="checkbox" name="isInternal" value="true" class="form-check-input" id="isInternal">
+                        <label class="form-check-label" for="isInternal">
+                            Komentarz wewnętrzny (widoczny tylko dla agentów)
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i>Wyślij
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 5. Historia zmian -->
+@if (Model.History != null && Model.History.Any())
+{
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center"
+             role="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse"
+             aria-expanded="false" style="cursor:pointer; user-select:none;">
+            <span>
+                <i class="bi bi-clock-history me-2"></i>
+                Historia zmian (@Model.History.Count)
+            </span>
+            <i class="bi bi-chevron-down" id="historyChevron"></i>
+        </div>
+        <div id="historyCollapse" class="collapse">
+            <div class="card-body">
+                <div class="timeline">
+                    @foreach (var entry in Model.History)
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="bi bi-circle-fill"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>@entry.FieldName</strong>
+                                        @if (!string.IsNullOrEmpty(entry.OldValue) && !string.IsNullOrEmpty(entry.NewValue))
+                                        {
+                                            <span class="text-muted">zmieniono z</span>
+                                            <span class="badge bg-secondary">@entry.OldValue</span>
+                                            <span class="text-muted">na</span>
+                                            <span class="badge bg-primary">@entry.NewValue</span>
+                                        }
+                                        else if (!string.IsNullOrEmpty(entry.NewValue))
+                                        {
+                                            <span class="text-muted">ustawiono na</span>
+                                            <span class="badge bg-primary">@entry.NewValue</span>
+                                        }
+                                    </div>
+                                    <small class="timeline-time">@entry.ChangedAt.ToString("dd.MM HH:mm")</small>
+                                </div>
+                                <small class="text-muted">przez @entry.ChangedByName</small>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -451,6 +490,54 @@
 
 @section Scripts {
     <script>
+        // Pokazuje/ukrywa pole opisu rozwiązania gdy status = Rozwiązany (4)
+        function toggleResolutionSummary() {
+            const select = document.getElementById('info-status-select');
+            const group = document.getElementById('resolution-summary-group');
+            if (!select || !group) return;
+            const isResolved = select.value === '4';
+            group.classList.toggle('d-none', !isResolved);
+            group.querySelector('textarea').required = isResolved;
+        }
+
+        // Przełączanie trybu edycji sekcji
+        function toggleEdit(section) {
+            const view = document.getElementById(section + '-view');
+            const edit = document.getElementById(section + '-edit');
+            const icon = document.getElementById(section + '-icon');
+            if (!view || !edit) return;
+            const editing = edit.classList.toggle('d-none');
+            view.classList.toggle('d-none');
+            if (icon) icon.className = editing ? 'bi bi-pencil' : 'bi bi-x-lg';
+        }
+
+        // Załączniki
+        (function () {
+            const ACCEPT = '.jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip';
+            const fileList = document.getElementById('attachment-file-list');
+            const addBtn = document.getElementById('attachment-add-btn');
+            const submitBtn = document.getElementById('attachment-submit-btn');
+            if (!addBtn) return;
+
+            addBtn.addEventListener('click', function () {
+                const row = document.createElement('div');
+                row.className = 'd-flex gap-2 align-items-center';
+                row.innerHTML = `
+                    <input type="file" name="file" class="form-control form-control-sm" accept="${ACCEPT}" />
+                    <button type="button" class="btn btn-outline-danger btn-sm flex-shrink-0" onclick="this.closest('div').remove(); updateAttachmentUI();">
+                        <i class="bi bi-x-lg"></i>
+                    </button>`;
+                fileList.appendChild(row);
+                updateAttachmentUI();
+            });
+
+            function updateAttachmentUI() {
+                const hasRows = fileList.children.length > 0;
+                submitBtn.classList.toggle('d-none', !hasRows);
+                addBtn.disabled = fileList.children.length >= 5;
+            }
+        })();
+
         // Obrót strzałki przy rozwijaniu historii
         document.addEventListener('DOMContentLoaded', function () {
             var collapseEl = document.getElementById('historyCollapse');

@@ -141,9 +141,9 @@ public class TicketService : ITicketService
 
         if (ticket.Priority != model.Priority)
         {
-            await AddHistoryAsync(ticket.Id, userId, "Zmiana priorytetu", 
-                ticket.Priority.ToString(), model.Priority.ToString(),
-                $"Zmieniono priorytet z '{ticket.Priority}' na '{model.Priority}'");
+            await AddHistoryAsync(ticket.Id, userId, "Zmiana priorytetu",
+                GetPriorityDisplayName(ticket.Priority), GetPriorityDisplayName(model.Priority),
+                $"Zmieniono priorytet z '{GetPriorityDisplayName(ticket.Priority)}' na '{GetPriorityDisplayName(model.Priority)}'");
             ticket.Priority = model.Priority;
             changes.Add("priority");
         }
@@ -339,8 +339,8 @@ public class TicketService : ITicketService
             ticket.ResolutionSummary = resolutionSummary;
         }
 
-        await AddHistoryAsync(ticketId, userId, "Zmiana statusu", 
-            oldStatus.ToString(), newStatus.ToString(),
+        await AddHistoryAsync(ticketId, userId, "Zmiana statusu",
+            GetStatusDisplayName(oldStatus), GetStatusDisplayName(newStatus),
             $"Status zmieniony z '{GetStatusDisplayName(oldStatus)}' na '{GetStatusDisplayName(newStatus)}'");
 
         await _context.SaveChangesAsync();
@@ -414,12 +414,104 @@ public class TicketService : ITicketService
         ticket.UpdatedAt = DateTime.UtcNow;
 
         await AddHistoryAsync(ticketId, userId, "Wznowiono",
-            TicketStatus.Resolved.ToString(), TicketStatus.New.ToString(),
+            GetStatusDisplayName(TicketStatus.Resolved), GetStatusDisplayName(TicketStatus.New),
             "Zgłoszenie wznowione przez zgłaszającego — niezadowolony z rozwiązania");
 
         await _context.SaveChangesAsync();
 
         await _notificationService.NotifyStatusChangedAsync(ticket, TicketStatus.Resolved, TicketStatus.New);
+
+        return true;
+    }
+
+    public async Task<bool> UpdateContentAsync(int ticketId, string title, string description, string userId)
+    {
+        var ticket = await _context.Tickets.FindAsync(ticketId);
+        if (ticket == null) return false;
+
+        bool changed = false;
+
+        if (ticket.Title != title)
+        {
+            await AddHistoryAsync(ticketId, userId, "Tytuł", ticket.Title, title, $"Zmieniono tytuł");
+            ticket.Title = title;
+            changed = true;
+        }
+
+        if (ticket.Description != description)
+        {
+            await AddHistoryAsync(ticketId, userId, "Opis", null, null, "Zaktualizowano opis zgłoszenia");
+            ticket.Description = description;
+            changed = true;
+        }
+
+        if (changed)
+        {
+            ticket.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+
+        return true;
+    }
+
+    public async Task<bool> UpdateInfoAsync(int ticketId, int categoryId, TicketPriority priority, DateTime? dueDate, string? assignedToUserId, string userId)
+    {
+        var ticket = await _context.Tickets
+            .Include(t => t.Category)
+            .Include(t => t.AssignedTo)
+            .FirstOrDefaultAsync(t => t.Id == ticketId);
+        if (ticket == null) return false;
+
+        bool changed = false;
+
+        if (ticket.CategoryId != categoryId)
+        {
+            var newCategory = await _context.Categories.FindAsync(categoryId);
+            await AddHistoryAsync(ticketId, userId, "Kategoria", ticket.Category?.Name, newCategory?.Name, "Zmieniono kategorię");
+            ticket.CategoryId = categoryId;
+            changed = true;
+        }
+
+        if (ticket.Priority != priority)
+        {
+            await AddHistoryAsync(ticketId, userId, "Priorytet", GetPriorityDisplayName(ticket.Priority), GetPriorityDisplayName(priority), "Zmieniono priorytet");
+            ticket.Priority = priority;
+            changed = true;
+        }
+
+        if (ticket.DueDate != dueDate)
+        {
+            await AddHistoryAsync(ticketId, userId, "Termin", ticket.DueDate?.ToString("dd.MM.yyyy HH:mm"), dueDate?.ToString("dd.MM.yyyy HH:mm"), "Zmieniono termin realizacji");
+            ticket.DueDate = dueDate;
+            changed = true;
+        }
+
+        var newAgentId = string.IsNullOrEmpty(assignedToUserId) ? null : assignedToUserId;
+        if (ticket.AssignedToUserId != newAgentId)
+        {
+            var oldAgentName = ticket.AssignedTo?.FullName ?? "Brak";
+            string? newAgentName = null;
+            if (newAgentId != null)
+            {
+                var newAgent = await _userManager.FindByIdAsync(newAgentId);
+                newAgentName = newAgent?.FullName;
+            }
+            var action = newAgentId == null ? "Usunięto przypisanie" : "Przypisano";
+            await AddHistoryAsync(ticketId, userId, action, oldAgentName, newAgentName ?? "Brak",
+                newAgentId == null ? "Usunięto przypisanie agenta" : $"Przypisano do agenta: {newAgentName}");
+            ticket.AssignedToUserId = newAgentId;
+            if (ticket.Status == TicketStatus.New && newAgentId != null)
+                ticket.Status = TicketStatus.InProgress;
+            changed = true;
+            if (newAgentId != null)
+                await _notificationService.NotifyTicketAssignedAsync(ticket, newAgentId);
+        }
+
+        if (changed)
+        {
+            ticket.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
 
         return true;
     }
@@ -434,8 +526,8 @@ public class TicketService : ITicketService
         ticket.UpdatedAt = DateTime.UtcNow;
 
         await AddHistoryAsync(ticketId, userId, "Zmiana priorytetu",
-            oldPriority.ToString(), newPriority.ToString(),
-            $"Priorytet zmieniony z '{oldPriority}' na '{newPriority}'");
+            GetPriorityDisplayName(oldPriority), GetPriorityDisplayName(newPriority),
+            $"Priorytet zmieniony z '{GetPriorityDisplayName(oldPriority)}' na '{GetPriorityDisplayName(newPriority)}'");
 
         await _context.SaveChangesAsync();
         return true;
@@ -612,9 +704,10 @@ public class TicketService : ITicketService
         {
             AssignedToMe = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status != TicketStatus.Resolved),
             UnassignedTickets = allTickets.Count(t => t.AssignedToUserId == null && t.Status != TicketStatus.Resolved),
-            NewTickets = allTickets.Count(t => t.Status == TicketStatus.New),
+            NewTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.New),
             InProgressTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.InProgress),
             WaitingForUserTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.WaitingForUser),
+            ResolvedTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.Status == TicketStatus.Resolved),
             ResolvedToday = allTickets.Count(t => t.AssignedToUserId == agentId && t.ResolvedAt?.Date == today),
             OverdueTickets = allTickets.Count(t => t.AssignedToUserId == agentId && t.IsOverdue)
         };
@@ -784,10 +877,22 @@ public class TicketService : ITicketService
         return status switch
         {
             TicketStatus.New => "Nowy",
-            TicketStatus.InProgress => "W trakcie",
+            TicketStatus.InProgress => "W realizacji",
             TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
             TicketStatus.Resolved => "Rozwiązany",
             _ => status.ToString()
+        };
+    }
+
+    private static string GetPriorityDisplayName(TicketPriority priority)
+    {
+        return priority switch
+        {
+            TicketPriority.Low => "Niski",
+            TicketPriority.Medium => "Średni",
+            TicketPriority.High => "Wysoki",
+            TicketPriority.Critical => "Krytyczny",
+            _ => priority.ToString()
         };
     }
 }

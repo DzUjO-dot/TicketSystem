@@ -19,8 +19,9 @@
     </a>
 </div>
 
-<!-- Stat Cards -->
-<div class="row g-3 mb-4">
+<p class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Przegląd</p>
+<!-- Stat Cards Row 1 - ogólne -->
+<div class="row g-3 mb-3">
     <div class="col-6 col-lg-3">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-body d-flex align-items-center gap-3">
@@ -69,6 +70,63 @@
                 <div>
                     <div class="fw-bold fs-3 lh-1">@(stats?.ResolvedToday ?? 0)</div>
                     <div class="text-muted small">Rozwiązane dziś</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="text-muted small fw-semibold text-uppercase mb-2" style="letter-spacing:.05em">Statusy moich zgłoszeń</p>
+<!-- Stat Cards Row 2 - statusy przypisanych zgłoszeń -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#dbeafe">
+                    <i class="bi bi-star" style="font-size:1.5rem;color:#3b82f6"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.NewTickets ?? 0)</div>
+                    <div class="text-muted small">Nowe</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fef3c7">
+                    <i class="bi bi-hourglass-split" style="font-size:1.5rem;color:#d97706"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
+                    <div class="text-muted small">W realizacji</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#fef9c3">
+                    <i class="bi bi-clock" style="font-size:1.5rem;color:#ca8a04"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.WaitingForUserTickets ?? 0)</div>
+                    <div class="text-muted small">Oczekuje na użytkownika</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3" style="background:#d1fae5">
+                    <i class="bi bi-check2-circle" style="font-size:1.5rem;color:#059669"></i>
+                </div>
+                <div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.ResolvedTickets ?? 0)</div>
+                    <div class="text-muted small">Rozwiązane</div>
                 </div>
             </div>
         </div>

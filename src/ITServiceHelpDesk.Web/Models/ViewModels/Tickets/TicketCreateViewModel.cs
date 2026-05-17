@@ -25,7 +25,7 @@ public class TicketCreateViewModel
 
     [Required]
     [Display(Name = "Priorytet")]
-    public TicketPriority Priority { get; set; } = TicketPriority.Medium;
+    public TicketPriority Priority { get; set; } = TicketPriority.Low;
 
     [Display(Name = "Termin realizacji")]
     [DataType(DataType.DateTime)]

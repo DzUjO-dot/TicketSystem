@@ -28,6 +28,7 @@
     @if (Model.Any())
     {
         <form asp-controller="Account" asp-action="MarkAllNotificationsRead" method="post" class="d-inline">
+            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
             <button type="submit" class="btn btn-link btn-sm p-0 text-muted" style="font-size:11px">
                 Oznacz wszystkie
             </button>

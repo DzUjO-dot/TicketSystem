@@ -228,7 +228,7 @@ public class NotificationService : INotificationService
             await _emailService.SendTicketStatusChangedEmailAsync(
                 ticket.CreatedBy.Email,
                 ticket.TicketNumber,
-                "W trakcie",
+                "W realizacji",
                 "Rozwiązany");
         }
     }
@@ -238,7 +238,7 @@ public class NotificationService : INotificationService
         return status switch
         {
             TicketStatus.New => "Nowy",
-            TicketStatus.InProgress => "W trakcie",
+            TicketStatus.InProgress => "W realizacji",
             TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
             TicketStatus.Resolved => "Rozwiązany",
             _ => status.ToString()

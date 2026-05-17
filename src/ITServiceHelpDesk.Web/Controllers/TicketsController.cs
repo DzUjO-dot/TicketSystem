@@ -101,6 +101,7 @@ public class TicketsController : Controller
         if (userId == null) return RedirectToAction("Login", "Account");
 
         var tickets = await _ticketService.GetAgentTicketsAsync(userId, filter, filter.PageIndex, filter.PageSize);
+        ViewBag.Stats = await _ticketService.GetAgentStatsAsync(userId);
 
         filter.Categories = new SelectList(await _categoryService.GetActiveCategoriesAsync(), "Id", "Name", filter.CategoryId);
         filter.Statuses = GetStatusSelectList(filter.Status);
@@ -171,7 +172,6 @@ public class TicketsController : Controller
 
         var viewModel = TicketDetailsViewModel.FromTicket(ticket, isAgent, isAdmin, userId!);
 
-        // Dropdown dla agentów
         if (isAgent || isAdmin)
         {
             var agents = await _userManager.GetUsersInRoleAsync("Agent");
@@ -179,9 +179,63 @@ public class TicketsController : Controller
             var allAgents = agents.Union(admins).Where(u => u.IsActive).ToList();
             viewModel.AgentOptions = new SelectList(
                 allAgents.Select(a => new { a.Id, Name = a.FullName }), "Id", "Name", ticket.AssignedToUserId);
+            viewModel.CategoryOptions = new SelectList(
+                await _categoryService.GetActiveCategoriesAsync(), "Id", "Name", ticket.CategoryId);
+            viewModel.PriorityOptions = GetPrioritySelectList(ticket.Priority);
+            viewModel.StatusOptions = GetStatusSelectList(ticket.Status);
         }
 
         return View(viewModel);
+    }
+
+    // ============================================
+    // INLINE EDIT
+    // ============================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Agent")]
+    public async Task<IActionResult> UpdateContent(int ticketId, string title, string description)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return RedirectToAction("Login", "Account");
+
+        if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(description))
+        {
+            TempData["ErrorMessage"] = "Tytuł i opis są wymagane.";
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+
+        await _ticketService.UpdateContentAsync(ticketId, title.Trim(), description.Trim(), userId);
+        TempData["SuccessMessage"] = "Treść zgłoszenia została zaktualizowana.";
+        return RedirectToAction(nameof(Details), new { id = ticketId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Agent")]
+    public async Task<IActionResult> UpdateInfo(int ticketId, int categoryId, TicketPriority priority, DateTime? dueDate, string? assignedToUserId, TicketStatus? newStatus, string? resolutionSummary)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return RedirectToAction("Login", "Account");
+
+        if (newStatus == TicketStatus.Resolved && string.IsNullOrWhiteSpace(resolutionSummary))
+        {
+            TempData["ErrorMessage"] = "Musisz podać opis rozwiązania problemu przed oznaczeniem jako rozwiązane.";
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+
+        await _ticketService.UpdateInfoAsync(ticketId, categoryId, priority, dueDate, assignedToUserId, userId);
+
+        if (newStatus.HasValue)
+        {
+            var ticket = await _ticketService.GetTicketByIdAsync(ticketId);
+            if (ticket != null && ticket.Status != newStatus.Value)
+                await _ticketService.ChangeStatusAsync(ticketId, newStatus.Value, userId, resolutionSummary);
+        }
+
+        TempData["SuccessMessage"] = "Informacje zgłoszenia zostały zaktualizowane.";
+        return RedirectToAction(nameof(Details), new { id = ticketId });
     }
 
     // ============================================
@@ -239,6 +293,7 @@ public class TicketsController : Controller
     // ============================================
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Agent")]
     public async Task<IActionResult> Edit(int id)
     {
         var ticket = await _ticketService.GetTicketByIdAsync(id);
@@ -289,6 +344,7 @@ public class TicketsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin,Agent")]
     public async Task<IActionResult> Edit(TicketEditViewModel model)
     {
         if (!ModelState.IsValid)
@@ -348,6 +404,34 @@ public class TicketsController : Controller
         {
             TempData["ErrorMessage"] = "Nie udało się wznowić zgłoszenia. Minęło 14 dni od rozwiązania lub status jest nieprawidłowy.";
         }
+
+        return RedirectToAction(nameof(Details), new { id = ticketId });
+    }
+
+    // ============================================
+    // CLOSE TICKET
+    // ============================================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CloseTicket(int ticketId)
+    {
+        var userId = _userManager.GetUserId(User);
+        if (userId == null) return RedirectToAction("Login", "Account");
+
+        var ticket = await _ticketService.GetTicketByIdAsync(ticketId);
+        var isAgent = User.IsInRole("Agent") || User.IsInRole("Admin");
+        if (ticket == null || (!isAgent && ticket.CreatedByUserId != userId))
+        {
+            TempData["ErrorMessage"] = "Nie masz uprawnień do zamknięcia tego zgłoszenia.";
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+
+        var result = await _ticketService.ChangeStatusAsync(ticketId, TicketStatus.Resolved, userId, "Zamknięte przez zgłaszającego");
+        if (result)
+            TempData["SuccessMessage"] = "Zgłoszenie zostało zamknięte.";
+        else
+            TempData["ErrorMessage"] = "Nie udało się zamknąć zgłoszenia.";
 
         return RedirectToAction(nameof(Details), new { id = ticketId });
     }
@@ -452,9 +536,9 @@ public class TicketsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UploadAttachment(int ticketId, IFormFile file)
+    public async Task<IActionResult> UploadAttachment(int ticketId, List<IFormFile> file)
     {
-        if (file == null || file.Length == 0)
+        if (file == null || !file.Any(f => f.Length > 0))
         {
             TempData["ErrorMessage"] = "Wybierz plik do przesłania.";
             return RedirectToAction(nameof(Details), new { id = ticketId });
@@ -463,10 +547,17 @@ public class TicketsController : Controller
         var userId = _userManager.GetUserId(User);
         if (userId == null) return RedirectToAction("Login", "Account");
 
+        var uploaded = 0;
         try
         {
-            await _ticketService.AddAttachmentAsync(ticketId, file, userId);
-            TempData["SuccessMessage"] = "Załącznik został przesłany.";
+            foreach (var f in file.Where(f => f.Length > 0))
+            {
+                await _ticketService.AddAttachmentAsync(ticketId, f, userId);
+                uploaded++;
+            }
+            TempData["SuccessMessage"] = uploaded == 1
+                ? "Załącznik został przesłany."
+                : $"Przesłano {uploaded} załączniki(-ów).";
         }
         catch (ArgumentException ex)
         {
@@ -580,7 +671,7 @@ public class TicketsController : Controller
     private static string GetStatusDisplayName(TicketStatus status) => status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.InProgress => "W trakcie",
+        TicketStatus.InProgress => "W realizacji",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
         _ => status.ToString()

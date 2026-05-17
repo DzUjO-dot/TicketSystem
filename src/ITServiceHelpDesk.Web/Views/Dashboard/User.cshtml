@@ -24,12 +24,12 @@
     <div class="col-6 col-lg-3">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 p-3" style="background:#f5f3ff">
-                    <i class="bi bi-ticket-perforated" style="font-size:1.5rem;color:#7c3aed"></i>
+                <div class="rounded-3 p-3" style="background:#dbeafe">
+                    <i class="bi bi-star" style="font-size:1.5rem;color:#3b82f6"></i>
                 </div>
                 <div>
-                    <div class="fw-bold fs-3 lh-1">@(stats?.TotalTickets ?? 0)</div>
-                    <div class="text-muted small">Wszystkie</div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.NewTickets ?? 0)</div>
+                    <div class="text-muted small">Nowe</div>
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
                 </div>
                 <div>
                     <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
-                    <div class="text-muted small">W trakcie</div>
+                    <div class="text-muted small">W realizacji</div>
                 </div>
             </div>
         </div>
@@ -50,12 +50,12 @@
     <div class="col-6 col-lg-3">
         <div class="card h-100 border-0 shadow-sm">
             <div class="card-body d-flex align-items-center gap-3">
-                <div class="rounded-3 p-3" style="background:#dbeafe">
-                    <i class="bi bi-play-circle" style="font-size:1.5rem;color:#2563eb"></i>
+                <div class="rounded-3 p-3" style="background:#fef9c3">
+                    <i class="bi bi-clock" style="font-size:1.5rem;color:#ca8a04"></i>
                 </div>
                 <div>
-                    <div class="fw-bold fs-3 lh-1">@(stats?.InProgressTickets ?? 0)</div>
-                    <div class="text-muted small">W realizacji</div>
+                    <div class="fw-bold fs-3 lh-1">@(stats?.WaitingForUserTickets ?? 0)</div>
+                    <div class="text-muted small">Oczekuje na użytkownika</div>
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@
                                                 };
                                                 var statusName = ticket.Status switch {
                                                     TicketStatus.New => "Nowy",
-                                                    TicketStatus.InProgress => "W trakcie",
+                                                    TicketStatus.InProgress => "W realizacji",
                                                     TicketStatus.WaitingForUser => "Oczekuje",
                                                     TicketStatus.Resolved => "Rozwiązany",
                                                     _ => ticket.Status.ToString()
@@ -180,7 +180,7 @@
                     }
                 }
                 @{ StatusRow("Nowe", stats?.NewTickets ?? 0, "#3b82f6"); }
-                @{ StatusRow("W trakcie", stats?.InProgressTickets ?? 0, "#f59e0b"); }
+                @{ StatusRow("W realizacji", stats?.InProgressTickets ?? 0, "#f59e0b"); }
                 @{ StatusRow("Oczekujące", stats?.WaitingForUserTickets ?? 0, "#ca8a04"); }
                 @{ StatusRow("Rozwiązane", stats?.ResolvedTickets ?? 0, "#10b981"); }
             </div>

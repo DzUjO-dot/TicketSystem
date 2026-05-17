@@ -8,116 +8,124 @@
     <p class="page-subtitle">Wypełnij formularz, aby zgłosić problem lub zapotrzebowanie</p>
 </div>
 
-<div class="row">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-ticket-perforated me-2"></i>
-                Formularz zgłoszenia
-            </div>
-            <div class="card-body">
-                <form asp-action="Create" method="post" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="Title" class="form-label">Tytuł zgłoszenia <span class="text-danger">*</span></label>
-                        <input asp-for="Title" class="form-control" placeholder="Krótki opis problemu" />
-                        <span asp-validation-for="Title" class="text-danger small"></span>
+<!-- Wskazówki + Priorytety -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex gap-3">
+                <div class="flex-shrink-0">
+                    <div class="rounded-3 p-2" style="background:#fef3c7">
+                        <i class="bi bi-lightbulb" style="font-size:1.25rem;color:#d97706"></i>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="CategoryId" class="form-label">Kategoria <span class="text-danger">*</span></label>
-                            <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
-                                <option value="">-- Wybierz kategorię --</option>
-                            </select>
-                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Priority" class="form-label">Priorytet <span class="text-danger">*</span></label>
-                            <select asp-for="Priority" class="form-select">
-                                <option value="Low">Niski - Może poczekać</option>
-                                <option value="Medium" selected>Średni - Standardowy</option>
-                                <option value="High">Wysoki - Pilne</option>
-                                <option value="Critical">Krytyczny - Blokuje pracę</option>
-                            </select>
-                            <span asp-validation-for="Priority" class="text-danger small"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Szczegółowy opis <span class="text-danger">*</span></label>
-                        <textarea asp-for="Description" class="form-control" rows="6" 
-                                  placeholder="Opisz problem jak najdokładniej. Podaj:&#10;- Co próbowałeś zrobić?&#10;- Co się stało?&#10;- Jakie komunikaty błędów widzisz?&#10;- Kiedy problem się zaczął?"></textarea>
-                        <span asp-validation-for="Description" class="text-danger small"></span>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label">Załączniki (opcjonalnie)</label>
-                        <div id="file-list" class="d-flex flex-column gap-2 mb-2"></div>
-                        <button type="button" id="add-file-btn" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-plus me-1"></i>Dodaj plik
-                        </button>
-                        <div class="form-text">Maksymalnie 5 plików, każdy do 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-end gap-2">
-                        <a asp-action="MyTickets" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-lg me-1"></i>
-                            Anuluj
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-send me-1"></i>
-                            Wyślij zgłoszenie
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div>
+                    <p class="fw-semibold mb-1 small">Jak napisać dobre zgłoszenie?</p>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li>Użyj jasnego i zwięzłego tytułu</li>
+                        <li>Opisz kroki prowadzące do problemu</li>
+                        <li>Dołącz zrzuty ekranu jeśli to możliwe</li>
+                        <li>Podaj komunikaty błędów</li>
+                        <li>Wybierz odpowiednią kategorię i priorytet</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-lg-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="bi bi-lightbulb me-2"></i>
-                Wskazówki
-            </div>
-            <div class="card-body">
-                <h6 class="fw-bold">Jak napisać dobre zgłoszenie?</h6>
-                <ul class="small text-muted mb-0">
-                    <li class="mb-2">Użyj jasnego i zwięzłego tytułu</li>
-                    <li class="mb-2">Opisz kroki prowadzące do problemu</li>
-                    <li class="mb-2">Dołącz zrzuty ekranu jeśli to możliwe</li>
-                    <li class="mb-2">Podaj komunikaty błędów</li>
-                    <li>Wybierz odpowiednią kategorię i priorytet</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">
-                <i class="bi bi-question-circle me-2"></i>
-                Priorytety
-            </div>
-            <div class="card-body">
-                <div class="mb-2">
-                    <span class="badge badge-priority-low me-2">Niski</span>
-                    <small class="text-muted">Małe niedogodności, mogą poczekać</small>
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body d-flex gap-3">
+                <div class="flex-shrink-0">
+                    <div class="rounded-3 p-2" style="background:#dbeafe">
+                        <i class="bi bi-question-circle" style="font-size:1.25rem;color:#2563eb"></i>
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <span class="badge badge-priority-medium me-2">Średni</span>
-                    <small class="text-muted">Standardowe problemy</small>
-                </div>
-                <div class="mb-2">
-                    <span class="badge badge-priority-high me-2">Wysoki</span>
-                    <small class="text-muted">Pilne, wpływa na pracę</small>
-                </div>
-                <div>
-                    <span class="badge badge-priority-critical me-2">Krytyczny</span>
-                    <small class="text-muted">Blokuje pracę całkowicie</small>
+                <div class="w-100">
+                    <p class="fw-semibold mb-2 small">Priorytety</p>
+                    <div class="d-flex flex-column gap-1">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-priority-low" style="min-width:72px">Niski</span>
+                            <small class="text-muted">Małe niedogodności, mogą poczekać</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-priority-medium" style="min-width:72px">Średni</span>
+                            <small class="text-muted">Standardowe problemy</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-priority-high" style="min-width:72px">Wysoki</span>
+                            <small class="text-muted">Pilne, wpływa na pracę</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge badge-priority-critical" style="min-width:72px">Krytyczny</span>
+                            <small class="text-muted">Blokuje pracę całkowicie</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Formularz -->
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-ticket-perforated me-2"></i>
+        Formularz zgłoszenia
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">Tytuł zgłoszenia <span class="text-danger">*</span></label>
+                <input asp-for="Title" class="form-control" placeholder="Krótki opis problemu" />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CategoryId" class="form-label">Kategoria <span class="text-danger">*</span></label>
+                    <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select">
+                        <option value="">-- Wybierz kategorię --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Priority" class="form-label">Priorytet <span class="text-danger">*</span></label>
+                    <select asp-for="Priority" class="form-select">
+                        <option value="Low">Niski - Może poczekać</option>
+                        <option value="Medium">Średni - Standardowy</option>
+                        <option value="High">Wysoki - Pilne</option>
+                        <option value="Critical">Krytyczny - Blokuje pracę</option>
+                    </select>
+                    <span asp-validation-for="Priority" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Szczegółowy opis <span class="text-danger">*</span></label>
+                <textarea asp-for="Description" class="form-control" rows="6"
+                          placeholder="Opisz problem jak najdokładniej. Podaj:&#10;- Co próbowałeś zrobić?&#10;- Co się stało?&#10;- Jakie komunikaty błędów widzisz?&#10;- Kiedy problem się zaczął?"></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">Załączniki (opcjonalnie)</label>
+                <div id="file-list" class="d-flex flex-column gap-2 mb-2"></div>
+                <button type="button" id="add-file-btn" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-plus me-1"></i>Dodaj plik
+                </button>
+                <div class="form-text">Maksymalnie 5 plików, każdy do 10 MB. Dozwolone: jpg, png, pdf, doc, xls, txt, zip.</div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="MyTickets" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Anuluj
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i>Wyślij zgłoszenie
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -151,6 +159,5 @@
         }
 
         addBtn.addEventListener('click', addFileRow);
-        addFileRow();
     </script>
 }
