@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Data;
+﻿using ITServiceHelpDesk.Data;
 using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +41,7 @@ public class CategoryService : ICategoryService
 
     public async Task<Category> CreateAsync(Category category)
     {
-        category.CreatedAt = DateTime.UtcNow;
+        category.CreatedAt = DateTime.Now;
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();
         return category;

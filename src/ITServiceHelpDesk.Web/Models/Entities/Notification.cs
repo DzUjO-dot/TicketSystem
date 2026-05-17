@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Enums;
+﻿using ITServiceHelpDesk.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,7 +36,7 @@ public class Notification
     public bool IsRead { get; set; } = false;
 
     [Display(Name = "Data utworzenia")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "Data odczytania")]
     public DateTime? ReadAt { get; set; }
@@ -85,7 +85,7 @@ public class Notification
     {
         get
         {
-            var timeSpan = DateTime.UtcNow - CreatedAt;
+            var timeSpan = DateTime.Now - CreatedAt;
             
             if (timeSpan.TotalMinutes < 1)
                 return "przed chwilą";

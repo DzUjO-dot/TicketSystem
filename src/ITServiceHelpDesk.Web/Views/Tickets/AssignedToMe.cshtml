@@ -1,9 +1,11 @@
 @model ITServiceHelpDesk.Models.ViewModels.Tickets.TicketListViewModel
+@using ITServiceHelpDesk.Services.Interfaces
 @{
     ViewData["Title"] = "Przypisane do mnie";
+    var stats = ViewBag.Stats as AgentTicketStatsViewModel ?? new AgentTicketStatsViewModel();
 }
 
-<div class="page-header d-flex justify-content-between align-items-center">
+<div class="page-header d-flex justify-content-between align-items-start flex-wrap gap-3">
     <div>
         <h1 class="page-title">Przypisane do mnie</h1>
         <p class="page-subtitle">
@@ -17,41 +19,43 @@
             }
         </p>
     </div>
-    <div class="page-actions">
-        <a asp-action="Unassigned" class="btn btn-outline-primary me-2">
-            <i class="bi bi-inbox me-2"></i>
-            Nieprzypisane
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="Unassigned" class="btn btn-outline-primary">
+            <i class="bi bi-inbox me-2"></i>Nieprzypisane
         </a>
         <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-lg me-2"></i>
-            Nowe zgłoszenie
+            <i class="bi bi-plus-lg me-2"></i>Nowe zgłoszenie
         </a>
     </div>
 </div>
 
 <!-- Quick Filters -->
-<div class="d-flex gap-2 mb-4 flex-wrap">
-    @{
-        var isArchive = Model.Filter?.Status?.ToString() == "Resolved";
-        var isActive = !isArchive;
-    }
+@{
+    var isArchive = Model.Filter?.Status?.ToString() == "Resolved";
+    var isActive = !isArchive;
+}
+<div class="d-flex flex-wrap gap-2 mb-2">
     <a asp-action="AssignedToMe" class="btn @(Model.Filter?.Status == null ? "btn-primary" : "btn-outline-primary")">
-        Aktywne (@(Model.Tickets?.TotalCount ?? 0))
+        Aktywne (@stats.AssignedToMe)
     </a>
-    <a asp-action="AssignedToMe" asp-route-status="New" class="btn @(Model.Filter?.Status?.ToString() == "New" ? "btn-warning" : "btn-outline-warning")">
+    <a asp-action="AssignedToMe" asp-route-status="New" class="btn @(Model.Filter?.Status?.ToString() == "New" ? "btn-status-new" : "btn-outline-status-new")">
         Nowe
+        <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.NewTickets</span>
     </a>
-    <a asp-action="AssignedToMe" asp-route-status="InProgress" class="btn @(Model.Filter?.Status?.ToString() == "InProgress" ? "btn-info" : "btn-outline-info")">
+    <a asp-action="AssignedToMe" asp-route-status="InProgress" class="btn @(Model.Filter?.Status?.ToString() == "InProgress" ? "btn-status-inprogress" : "btn-outline-status-inprogress")">
         W realizacji
+        <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.InProgressTickets</span>
     </a>
-    <a asp-action="AssignedToMe" asp-route-status="WaitingForUser" class="btn @(Model.Filter?.Status?.ToString() == "WaitingForUser" ? "btn-secondary" : "btn-outline-secondary")">
+    <a asp-action="AssignedToMe" asp-route-status="WaitingForUser" class="btn @(Model.Filter?.Status?.ToString() == "WaitingForUser" ? "btn-status-waitingforuser" : "btn-outline-status-waitingforuser")">
         Oczekuje
+        <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.WaitingForUserTickets</span>
     </a>
-    <div class="ms-auto">
-        <a asp-action="AssignedToMe" asp-route-status="Resolved" class="btn @(Model.Filter?.Status?.ToString() == "Resolved" ? "btn-success" : "btn-outline-success")">
-            <i class="bi bi-archive me-1"></i>Archiwum — Rozwiązane
-        </a>
-    </div>
+</div>
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a asp-action="AssignedToMe" asp-route-status="Resolved" class="btn @(Model.Filter?.Status?.ToString() == "Resolved" ? "btn-status-resolved" : "btn-outline-status-resolved")">
+        <i class="bi bi-archive me-1"></i>Archiwum — Rozwiązane
+        <span class="badge bg-white text-dark ms-1 border border-secondary align-middle">@stats.ResolvedTickets</span>
+    </a>
 </div>
 
 <!-- Tickets -->
@@ -135,14 +139,27 @@
 }
 else
 {
-    <div class="card">
-        <div class="card-body text-center py-5">
-            <i class="bi bi-check-circle text-success" style="font-size: 64px;"></i>
-            <h5 class="mt-3">Brak przypisanych zgłoszeń</h5>
-            <p class="text-muted">Nie masz obecnie żadnych zgłoszeń do obsługi.</p>
-            <a asp-action="Unassigned" class="btn btn-primary mt-2">
-                <i class="bi bi-inbox me-2"></i>Zobacz nieprzypisane zgłoszenia
-            </a>
+    @if (isArchive)
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-archive text-muted" style="font-size: 64px;"></i>
+                <h5 class="mt-3">Archiwum jest puste</h5>
+                <p class="text-muted">Nie masz jeszcze żadnych rozwiązanych zgłoszeń.</p>
+            </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-check-circle text-success" style="font-size: 64px;"></i>
+                <h5 class="mt-3">Brak przypisanych zgłoszeń</h5>
+                <p class="text-muted">Nie masz obecnie żadnych zgłoszeń do obsługi.</p>
+                <a asp-action="Unassigned" class="btn btn-primary mt-2">
+                    <i class="bi bi-inbox me-2"></i>Zobacz nieprzypisane zgłoszenia
+                </a>
+            </div>
+        </div>
+    }
 }

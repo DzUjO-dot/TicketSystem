@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace ITServiceHelpDesk.Models.Entities;
@@ -34,7 +34,7 @@ public class ApplicationUser : IdentityUser
     public bool IsActive { get; set; } = true;
 
     [Display(Name = "Data utworzenia")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     [Display(Name = "Ostatnie logowanie")]
     public DateTime? LastLoginAt { get; set; }

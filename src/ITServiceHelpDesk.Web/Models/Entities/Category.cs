@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ITServiceHelpDesk.Models.Entities;
 
@@ -33,7 +33,7 @@ public class Category
     public int DisplayOrder { get; set; } = 0;
 
     [Display(Name = "Data utworzenia")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     // ============================================
     // NAVIGATION PROPERTIES

@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Data;
+﻿using ITServiceHelpDesk.Data;
 using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.Enums;
 using ITServiceHelpDesk.Services.Interfaces;
@@ -30,7 +30,7 @@ public class NotificationService : INotificationService
             Type = type,
             RelatedTicketId = relatedTicketId,
             IsRead = false,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         _context.Notifications.Add(notification);
@@ -65,7 +65,7 @@ public class NotificationService : INotificationService
         if (notification == null) return false;
 
         notification.IsRead = true;
-        notification.ReadAt = DateTime.UtcNow;
+        notification.ReadAt = DateTime.Now;
         await _context.SaveChangesAsync();
 
         return true;
@@ -80,7 +80,7 @@ public class NotificationService : INotificationService
         foreach (var notification in notifications)
         {
             notification.IsRead = true;
-            notification.ReadAt = DateTime.UtcNow;
+            notification.ReadAt = DateTime.Now;
         }
 
         await _context.SaveChangesAsync();
@@ -228,7 +228,7 @@ public class NotificationService : INotificationService
             await _emailService.SendTicketStatusChangedEmailAsync(
                 ticket.CreatedBy.Email,
                 ticket.TicketNumber,
-                "W trakcie",
+                "W realizacji",
                 "Rozwiązany");
         }
     }
@@ -238,7 +238,7 @@ public class NotificationService : INotificationService
         return status switch
         {
             TicketStatus.New => "Nowy",
-            TicketStatus.InProgress => "W trakcie",
+            TicketStatus.InProgress => "W realizacji",
             TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
             TicketStatus.Resolved => "Rozwiązany",
             _ => status.ToString()

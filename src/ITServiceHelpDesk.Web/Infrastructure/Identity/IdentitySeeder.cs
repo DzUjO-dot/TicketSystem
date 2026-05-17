@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Data;
+﻿using ITServiceHelpDesk.Data;
 using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -53,7 +53,7 @@ public static class IdentitySeeder
             Department = "IT",
             EmailConfirmed = true,
             IsActive = true,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         }, "Admin123!", Roles.Admin);
     }
 
@@ -194,7 +194,7 @@ public static class IdentitySeeder
         var email = categories.First(c => c.Name == "Poczta e-mail");
         var accounts = categories.First(c => c.Name == "Konta i uprawnienia");
 
-        var currentYear = DateTime.UtcNow.Year;
+        var currentYear = DateTime.Now.Year;
         var ticketCounter = 1;
 
         var tickets = new List<Ticket>
@@ -209,9 +209,9 @@ public static class IdentitySeeder
                 Priority = TicketPriority.High,
                 CategoryId = hardware.Id,
                 CreatedByUserId = user1.Id,
-                CreatedAt = DateTime.UtcNow.AddHours(-2),
-                UpdatedAt = DateTime.UtcNow.AddHours(-2),
-                DueDate = DateTime.UtcNow.AddDays(1)
+                CreatedAt = DateTime.Now.AddHours(-2),
+                UpdatedAt = DateTime.Now.AddHours(-2),
+                DueDate = DateTime.Now.AddDays(1)
             },
             // Ticket 2 - InProgress, assigned
             new Ticket
@@ -224,9 +224,9 @@ public static class IdentitySeeder
                 CategoryId = software.Id,
                 CreatedByUserId = user2.Id,
                 AssignedToUserId = agent1.Id,
-                CreatedAt = DateTime.UtcNow.AddDays(-1),
-                UpdatedAt = DateTime.UtcNow.AddHours(-4),
-                DueDate = DateTime.UtcNow.AddDays(3)
+                CreatedAt = DateTime.Now.AddDays(-1),
+                UpdatedAt = DateTime.Now.AddHours(-4),
+                DueDate = DateTime.Now.AddDays(3)
             },
             // Ticket 3 - In Progress
             new Ticket
@@ -239,9 +239,9 @@ public static class IdentitySeeder
                 CategoryId = network.Id,
                 CreatedByUserId = user3.Id,
                 AssignedToUserId = agent2?.Id,
-                CreatedAt = DateTime.UtcNow.AddDays(-2),
-                UpdatedAt = DateTime.UtcNow.AddHours(-1),
-                DueDate = DateTime.UtcNow.AddHours(4)
+                CreatedAt = DateTime.Now.AddDays(-2),
+                UpdatedAt = DateTime.Now.AddHours(-1),
+                DueDate = DateTime.Now.AddHours(4)
             },
             // Ticket 4 - Waiting for User
             new Ticket
@@ -254,9 +254,9 @@ public static class IdentitySeeder
                 CategoryId = email.Id,
                 CreatedByUserId = user1.Id,
                 AssignedToUserId = agent1.Id,
-                CreatedAt = DateTime.UtcNow.AddDays(-3),
-                UpdatedAt = DateTime.UtcNow.AddDays(-1),
-                DueDate = DateTime.UtcNow.AddDays(1)
+                CreatedAt = DateTime.Now.AddDays(-3),
+                UpdatedAt = DateTime.Now.AddDays(-1),
+                DueDate = DateTime.Now.AddDays(1)
             },
             // Ticket 5 - Resolved
             new Ticket
@@ -269,9 +269,9 @@ public static class IdentitySeeder
                 CategoryId = accounts.Id,
                 CreatedByUserId = user2.Id,
                 AssignedToUserId = agent1.Id,
-                CreatedAt = DateTime.UtcNow.AddDays(-5),
-                UpdatedAt = DateTime.UtcNow.AddDays(-2),
-                ResolvedAt = DateTime.UtcNow.AddDays(-2),
+                CreatedAt = DateTime.Now.AddDays(-5),
+                UpdatedAt = DateTime.Now.AddDays(-2),
+                ResolvedAt = DateTime.Now.AddDays(-2),
                 ResolutionSummary = "Konto utworzone. Login: m.nowicki, hasło tymczasowe przekazane mailowo do przełożonego."
             },
             // Ticket 6 - Resolved
@@ -285,9 +285,9 @@ public static class IdentitySeeder
                 CategoryId = hardware.Id,
                 CreatedByUserId = user3.Id,
                 AssignedToUserId = agent2?.Id,
-                CreatedAt = DateTime.UtcNow.AddDays(-7),
-                UpdatedAt = DateTime.UtcNow.AddDays(-4),
-                ResolvedAt = DateTime.UtcNow.AddDays(-4),
+                CreatedAt = DateTime.Now.AddDays(-7),
+                UpdatedAt = DateTime.Now.AddDays(-4),
+                ResolvedAt = DateTime.Now.AddDays(-4),
                 ResolutionSummary = "Klawiatura wymieniona na nową. Stara oddana do utylizacji."
             },
             // Ticket 7 - Critical, New
@@ -300,9 +300,9 @@ public static class IdentitySeeder
                 Priority = TicketPriority.Critical,
                 CategoryId = categories.First(c => c.Name == "Bezpieczeństwo").Id,
                 CreatedByUserId = user1.Id,
-                CreatedAt = DateTime.UtcNow.AddMinutes(-30),
-                UpdatedAt = DateTime.UtcNow.AddMinutes(-30),
-                DueDate = DateTime.UtcNow.AddHours(2)
+                CreatedAt = DateTime.Now.AddMinutes(-30),
+                UpdatedAt = DateTime.Now.AddMinutes(-30),
+                DueDate = DateTime.Now.AddHours(2)
             }
         };
 
@@ -321,7 +321,7 @@ public static class IdentitySeeder
                 OldValue = null,
                 NewValue = agent1.FullName,
                 Description = $"Zgłoszenie przypisane do agenta: {agent1.FullName}",
-                CreatedAt = DateTime.UtcNow.AddHours(-4)
+                CreatedAt = DateTime.Now.AddHours(-4)
             },
             new TicketHistory
             {
@@ -329,9 +329,9 @@ public static class IdentitySeeder
                 UserId = agent1.Id,
                 Action = "Zmiana statusu",
                 OldValue = "Nowy",
-                NewValue = "W trakcie",
-                Description = "Status zmieniony z Nowy na W trakcie",
-                CreatedAt = DateTime.UtcNow.AddHours(-4)
+                NewValue = "W realizacji",
+                Description = "Status zmieniony z Nowy na W realizacji",
+                CreatedAt = DateTime.Now.AddHours(-4)
             }
         };
 
@@ -343,7 +343,7 @@ public static class IdentitySeeder
                 AuthorId = agent1.Id,
                 Content = "Dzień dobry, przejmuję zgłoszenie. Sprawdzę dostępność licencji Adobe Acrobat Pro i wrócę z informacją.",
                 CommentType = CommentType.Public,
-                CreatedAt = DateTime.UtcNow.AddHours(-4)
+                CreatedAt = DateTime.Now.AddHours(-4)
             },
             new TicketComment
             {
@@ -351,7 +351,7 @@ public static class IdentitySeeder
                 AuthorId = agent1.Id,
                 Content = "Hasło zostało zresetowane. Nowe hasło tymczasowe wysłałem na służbowy telefon SMS. Proszę o potwierdzenie, czy udało się zalogować.",
                 CommentType = CommentType.Public,
-                CreatedAt = DateTime.UtcNow.AddDays(-1)
+                CreatedAt = DateTime.Now.AddDays(-1)
             },
             new TicketComment
             {
@@ -359,7 +359,7 @@ public static class IdentitySeeder
                 AuthorId = agent2?.Id ?? agent1.Id,
                 Content = "Sprawdzam uprawnienia użytkownika w Active Directory. Wygląda na to, że konto zostało przypadkowo usunięte z grupy dostępowej.",
                 CommentType = CommentType.Internal,
-                CreatedAt = DateTime.UtcNow.AddHours(-1)
+                CreatedAt = DateTime.Now.AddHours(-1)
             }
         };
 

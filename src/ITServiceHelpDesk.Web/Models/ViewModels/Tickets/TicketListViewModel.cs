@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Entities;
+﻿using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.ViewModels.Shared;
 
 namespace ITServiceHelpDesk.Models.ViewModels.Tickets;
@@ -56,7 +56,7 @@ public class TicketListItemViewModel
     {
         get
         {
-            var timeSpan = DateTime.UtcNow - UpdatedAt;
+            var timeSpan = DateTime.Now - UpdatedAt;
             
             if (timeSpan.TotalMinutes < 1)
                 return "przed chwilą";
@@ -102,7 +102,7 @@ public class TicketListItemViewModel
     private static string GetStatusDisplayName(Models.Enums.TicketStatus status) => status switch
     {
         Models.Enums.TicketStatus.New => "Nowy",
-        Models.Enums.TicketStatus.InProgress => "W trakcie",
+        Models.Enums.TicketStatus.InProgress => "W realizacji",
         Models.Enums.TicketStatus.WaitingForUser => "Oczekuje",
         Models.Enums.TicketStatus.Resolved => "Rozwiązany",
         _ => status.ToString()

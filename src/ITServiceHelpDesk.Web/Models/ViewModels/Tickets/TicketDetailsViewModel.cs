@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Models.Entities;
+﻿using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Models.Enums;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -114,6 +114,8 @@ public class TicketDetailsViewModel
 
     public SelectList? StatusOptions { get; set; }
     public SelectList? AgentOptions { get; set; }
+    public SelectList? CategoryOptions { get; set; }
+    public SelectList? PriorityOptions { get; set; }
 
     // ============================================
     // HELPERS
@@ -121,9 +123,9 @@ public class TicketDetailsViewModel
     
     public string StatusBadgeClass => Status switch
     {
-        TicketStatus.New => "bg-purple",
-        TicketStatus.InProgress => "bg-warning text-dark",
-        TicketStatus.WaitingForUser => "bg-info",
+        TicketStatus.New => "badge-status-new",
+        TicketStatus.InProgress => "badge-status-inprogress",
+        TicketStatus.WaitingForUser => "badge-status-waitingforuser",
         TicketStatus.Resolved => "bg-success",
         _ => "bg-secondary"
     };
@@ -140,7 +142,7 @@ public class TicketDetailsViewModel
     public string StatusDisplayName => Status switch
     {
         TicketStatus.New => "Nowy",
-        TicketStatus.InProgress => "W trakcie",
+        TicketStatus.InProgress => "W realizacji",
         TicketStatus.WaitingForUser => "Oczekuje na użytkownika",
         TicketStatus.Resolved => "Rozwiązany",
         _ => Status.ToString()
@@ -189,6 +191,7 @@ public class TicketDetailsViewModel
             AssignedToEmail = ticket.AssignedTo?.Email,
             AssignedToInitials = ticket.AssignedTo?.Initials,
             AssignedToUserId = ticket.AssignedToUserId,
+            CreatedByUserId = ticket.CreatedByUserId,
             IsOverdue = ticket.IsOverdue,
             IsOpen = ticket.IsOpen,
             Age = ticket.Age,
@@ -203,11 +206,11 @@ public class TicketDetailsViewModel
         vm.CanComment = ticket.IsOpen || isAgent || isAdmin;
         vm.CanChangeStatus = isAgent || isAdmin;
         vm.CanAssign = isAgent || isAdmin;
-        vm.CanClose = isAgent || isAdmin;
+        vm.CanClose = (isOwner && ticket.IsOpen) || isAgent || isAdmin;
         vm.CanReopen = isOwner &&
                        ticket.Status == TicketStatus.Resolved &&
                        ticket.ResolvedAt.HasValue &&
-                       (DateTime.UtcNow - ticket.ResolvedAt.Value).TotalDays <= 14;
+                       (DateTime.Now - ticket.ResolvedAt.Value).TotalDays <= 14;
         vm.CanAddInternalComment = isAgent || isAdmin;
 
         // Map comments
@@ -292,7 +295,9 @@ public class TicketAttachmentViewModel
             FileIcon = attachment.FileIcon,
             IsImage = attachment.IsImage,
             UploadedByName = attachment.UploadedBy.FullName,
-            UploadedAt = attachment.UploadedAt
+            UploadedAt = attachment.UploadedAt,
+            ContentType = attachment.ContentType,
+            FilePath = attachment.FilePath
         };
     }
 }

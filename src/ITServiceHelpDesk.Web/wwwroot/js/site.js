@@ -160,9 +160,9 @@
     // ============================================
     window.getStatusColor = function(status) {
         const colors = {
-            'New': '#3b82f6',
+            'New': '#14b8a6',
             'Open': '#7c3aed',
-            'InProgress': '#f59e0b',
+            'InProgress': '#6366f1',
             'WaitingForUser': '#ca8a04',
             'Resolved': '#10b981',
             'Closed': '#64748b',

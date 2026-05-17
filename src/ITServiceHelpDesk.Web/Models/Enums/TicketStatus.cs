@@ -10,7 +10,7 @@ public enum TicketStatus
     [Display(Name = "Nowy")]
     New = 0,
 
-    [Display(Name = "W trakcie")]
+    [Display(Name = "W realizacji")]
     InProgress = 2,
 
     [Display(Name = "Oczekuje na użytkownika")]

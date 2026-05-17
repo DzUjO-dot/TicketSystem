@@ -1,4 +1,4 @@
-using ITServiceHelpDesk.Data;
+﻿using ITServiceHelpDesk.Data;
 using ITServiceHelpDesk.Models.Entities;
 using ITServiceHelpDesk.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +39,7 @@ public class AuditService : IAuditService
             NewValues = newValues,
             IpAddress = GetIpAddress(httpContext),
             UserAgent = httpContext?.Request.Headers.UserAgent.ToString(),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.Now
         };
 
         _context.AuditLogs.Add(auditLog);

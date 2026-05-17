@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ITServiceHelpDesk.Models.Entities;
@@ -37,7 +37,7 @@ public class TicketHistory
     public string Description { get; set; } = string.Empty;
 
     [Display(Name = "Data")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     // ============================================
     // COMPUTED PROPERTIES
